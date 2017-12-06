@@ -1,3 +1,5 @@
+// Public Domain kick in it to ya
+
 #pragma once
 
 #include <vector>
@@ -14,7 +16,7 @@ namespace FingerPrintOTron
     {
         public:
         
-        static HASH GenerateHash(const std::vector<UChar32>& word)
+        HASH operator()(const std::vector<UChar32>& word)
         {
             uint32_t seed = 42;
             uint32_t hash = 0;
@@ -22,9 +24,5 @@ namespace FingerPrintOTron
             HASH hash16 = (HASH)hash;
             return hash16;
         }
-
-        private:
-        Hasher();
-        ~Hasher();
     };
 } 

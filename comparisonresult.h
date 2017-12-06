@@ -1,3 +1,4 @@
+// Public Domain kick in it to ya
 #pragma once
 
 #include <vector>

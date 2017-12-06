@@ -1,3 +1,5 @@
+// Public Domain kick in it to ya
+
 #include <dirent.h>
 
 #include <iostream>
@@ -52,14 +54,15 @@ int main(int argc, char* argv[])
         return ret;
     }
 
+    Hasher H;
     std::string buffer;
     ReadFile(file1,buffer);
-    FingerPrintGenerator fp1(buffer.c_str(),10,9);
+    FingerPrintGenerator<Hasher> fp1(buffer.c_str(),10,9,H);
     std::shared_ptr<Document> doc1(fp1.GetDocument(file1));
 
     buffer.clear();
     ReadFile(file2,buffer);
-    FingerPrintGenerator fp2(buffer.c_str(),10,9);
+    FingerPrintGenerator<Hasher> fp2(buffer.c_str(),10,9,H);
     std::shared_ptr<Document> doc2(fp2.GetDocument(file2));
  
     ComparisonResult result;

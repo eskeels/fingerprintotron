@@ -5,6 +5,8 @@
 #include <unicode/uchriter.h>
 #include <unicode/ustdio.h>
 #include <unicode/utypes.h>
+// Public Domain kick in it to ya
+
 #include <unicode/uchar.h>
 
 #include "hasher.h"
@@ -13,16 +15,18 @@
 
 namespace FingerPrintOTron
 {
+    template<typename HASHFUNCTION>
     class FingerPrintGenerator
     {
         public:
             // Takes UTF-8
-            FingerPrintGenerator(const char *UTF8Buffer, const uint16_t NGramSize, const uint16_t WinnowSize)
+            FingerPrintGenerator(const char *UTF8Buffer, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
                 : mWINNOW_SIZE(WinnowSize),
                   mNGRAM_SIZE(NGramSize),
                   mW(0),
                   mMinHash(0),
-                  mUS(UnicodeString::fromUTF8(UTF8Buffer))
+                  mUS(UnicodeString::fromUTF8(UTF8Buffer)),
+                  mHashFunction(hashFunction)
             {
                 const UChar *ucharTxt = mUS.getTerminatedBuffer();
                 mNGI.reset(new NGramIterator(ucharTxt, u_strlen(ucharTxt), mNGRAM_SIZE));
@@ -46,7 +50,8 @@ namespace FingerPrintOTron
             {
                 while (mNGI->Next())
                 {
-                    HASH hash = GenerateHash(mNGI->GetNGram());
+//                    HASH hash = GenerateHash(mNGI->GetNGram());
+                    HASH hash = mHashFunction(mNGI->GetNGram());
 
                     SetMinHash(hash);
 
@@ -65,12 +70,12 @@ namespace FingerPrintOTron
 
                 return false;
             }
-
+/*
             virtual HASH GenerateHash(const std::vector<UChar32>& word) const
             {
                 return Hasher::GenerateHash(word);
             }
-
+*/
             HASH GetHash() const
             {
                 return mMinHash;
@@ -107,6 +112,7 @@ namespace FingerPrintOTron
             uint16_t mW;
             HASH mMinHash;
             UnicodeString mUS;
+            HASHFUNCTION mHashFunction;
     };
 }
 

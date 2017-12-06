@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+// Public Domain kick in it to ya
 
 #include "hasher.h"
 #include "comparisonresult.h"

@@ -4,22 +4,14 @@
 
 using namespace FingerPrintOTron;
 
-class TestFPG : public FingerPrintGenerator
+class TestHasher
 {
     public:
-        TestFPG(const char *UTF8Buffer, const uint16_t NGramSize, const uint16_t WinnowSize)
-            : FingerPrintGenerator(UTF8Buffer, NGramSize, WinnowSize)
-        {
-        }
-
-        HASH GenerateHash(const std::vector<UChar32>& word) const
-        {
-            std::string h(word.begin(), word.end());
-            mNGrams.push_back(h);
-            return static_cast<HASH>(h[0]);
-        }
-
-    mutable std::vector<std::string> mNGrams;
+    HASH operator()(const std::vector<UChar32>& word) const
+    {
+        std::string h(word.begin(), word.end());
+        return static_cast<HASH>(h[0]);
+    }
 };
 
 void TestSimple()
@@ -30,7 +22,7 @@ void TestSimple()
     // Test hash function returns first character so expected
     // "hashes" are simply a and c
     std::vector<HASH> result { 'a', 'c' };
-    TestFPG fp(testChars,3,2);
+    FingerPrintGenerator<TestHasher> fp(testChars,3,2,TestHasher());
     int i = 0;
     while (fp.Next())
     {
@@ -49,7 +41,7 @@ void TestLeftover()
     // Test hash function returns first character so expected
     // "hashes" are simply a and c
     std::vector<HASH> result { 'a', 'c' };
-    TestFPG fp(testChars,3,2);
+    FingerPrintGenerator<TestHasher> fp(testChars,3,2,TestHasher());
     int i = 0;
     while (fp.Next())
     {
@@ -60,11 +52,12 @@ void TestLeftover()
     ASSERT( true == fp.Leftover() );
     ASSERT( 'e' == fp.GetHash());
 }
+
 void TestSigMod()
 {
     const char testChars[] = "A do run run run, a do run run";
     std::vector<HASH> result = { 33081, 5729, 7412, 33081, 5729 };
-    FingerPrintGenerator fp(testChars,5,4);
+    FingerPrintGenerator<Hasher> fp(testChars,5,4,Hasher());
     int i = 0;
     while (fp.Next())
     {

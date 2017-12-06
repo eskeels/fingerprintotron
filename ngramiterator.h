@@ -1,4 +1,5 @@
 #pragma once
+// Public Domain kick in it to ya
 
 #include <iostream>
 #include <vector>

@@ -7,7 +7,8 @@ using namespace FingerPrintOTron;
 void TestEmpty()
 {
     std::vector<UChar32> word;
-    ASSERT( 52572 == Hasher::GenerateHash(word) );
+    Hasher hasher;
+    ASSERT( 52572 == hasher(word) );
 }
 
 int main(int argc, char* argv[])
