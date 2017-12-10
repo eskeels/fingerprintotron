@@ -1,25 +1,19 @@
 // Public Domain kick in it to ya
 
-#include <dirent.h>
+//#include <dirent.h>
 
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include <memory>
-#include <map>
-
-#include <unicode/uchriter.h>
-#include <unicode/ustdio.h>
-#include <unicode/utypes.h>
-#include <unicode/uchar.h>
 
 #include "hasher.h"
-#include "ngramiterator.h"
 #include "fingerprintgenerator.h"
 #include "document.h"
 #include "comparisonresult.h"
 
 using namespace FingerPrintOTron;
+
+const uint16_t NGRAM = 10; 
+const uint16_t WINNOWSIZE = 9;
 
 int ParseCmdLine(int argc, char* argv[], std::string& firstFile, std::string& secondFile)
 {
@@ -32,7 +26,7 @@ int ParseCmdLine(int argc, char* argv[], std::string& firstFile, std::string& se
     firstFile.assign(argv[1]);
     secondFile.assign(argv[2]);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void ReadFile(const std::string& filename, std::string& buffer)
@@ -44,27 +38,29 @@ void ReadFile(const std::string& filename, std::string& buffer)
     }
 }
 
+std::shared_ptr<Document> HashFile(const std::string& filename)
+{
+    Hasher H;
+    std::string buffer;
+    ReadFile(filename,buffer);
+    FingerPrintGenerator<Hasher> fp(buffer.c_str(),10,9,H);
+    std::shared_ptr<Document> doc(fp.GetDocument(filename));
+    return doc;
+}
+
 int main(int argc, char* argv[])
 {
     std::string file1,file2;
 
     int ret = ParseCmdLine(argc, argv, file1, file2);
-    if (ret != 0)
+    if (ret != EXIT_SUCCESS)
     {
         return ret;
     }
 
-    Hasher H;
-    std::string buffer;
-    ReadFile(file1,buffer);
-    FingerPrintGenerator<Hasher> fp1(buffer.c_str(),10,9,H);
-    std::shared_ptr<Document> doc1(fp1.GetDocument(file1));
+    std::shared_ptr<Document> doc1(HashFile(file1));
+    std::shared_ptr<Document> doc2(HashFile(file2));
 
-    buffer.clear();
-    ReadFile(file2,buffer);
-    FingerPrintGenerator<Hasher> fp2(buffer.c_str(),10,9,H);
-    std::shared_ptr<Document> doc2(fp2.GetDocument(file2));
- 
     ComparisonResult result;
 
     doc1->Compare(*doc2,result);
