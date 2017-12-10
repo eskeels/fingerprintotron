@@ -15,9 +15,12 @@ if (COVERAGE)
     set(CMAKE_EXE_LINKER_FLAGS "--coverage")
 endif(COVERAGE)
 
-add_executable (fingerprinterutil murmur3.c main.cpp)
-target_link_libraries(fingerprinterutil icudata icuio icuuc)
+#add_executable (fingerprinterutil murmur3.c main.cpp)
+#target_link_libraries(fingerprinterutil icudata icuio icuuc)
 
 add_library (fingerprinter SHARED murmur3.c)
+
+add_executable (fingerprintcompare main.cpp)
+target_link_libraries(fingerprintcompare fingerprinter icudata icuio icuuc)
 
 add_subdirectory(unittests)
