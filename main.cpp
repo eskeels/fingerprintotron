@@ -19,7 +19,7 @@ int ParseCmdLine(int argc, char* argv[], std::string& firstFile, std::string& se
 {
     if (argc!=3)
     {
-        std::cerr << "Invalid command line options. Need 2 files to compare." << std::endl;
+        std::cerr << "Invalid command line options. Need 2 UTF-8 files to compare." << std::endl;
         return EXIT_FAILURE;
     }
 
