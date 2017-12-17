@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "test.h"
 
 #include "hasher.h"
@@ -45,16 +47,29 @@ std::string sherlock = "I had called upon my friend Sherlock Holmes upon the sec
                        " purpose of examination.";
 
 
-void Test1()
+void TestSame()
 {
     std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlock);
+    ASSERT(100 == cr->GetPercentageRHS());
+    ASSERT(100 == cr->GetPercentageLHS());
+}
 
-    std::cout << cr->GetPercentageRHS() << std::endl;
+void TestUpperLower()
+{
+    std::string sherlockUpper(sherlock);
+    std::string sherlockLower(sherlock);
+
+    std::transform(sherlockUpper.begin(), sherlockUpper.end(), sherlockUpper.begin(), ::toupper); 
+    std::transform(sherlockLower.begin(), sherlockLower.end(), sherlockLower.begin(), ::tolower); 
+    std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlock);
+    ASSERT(100 == cr->GetPercentageRHS());
+    ASSERT(100 == cr->GetPercentageLHS());
 }
 
 int main(int argc, char* argv[])
 {
-    Test1();
+    TestSame();
+    TestUpperLower();
     return 0;
 }
 
