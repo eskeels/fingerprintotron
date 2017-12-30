@@ -1,3 +1,4 @@
+// Public Domain kick in it to ya
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -5,7 +6,6 @@
 #include <unicode/uchriter.h>
 #include <unicode/ustdio.h>
 #include <unicode/utypes.h>
-// Public Domain kick in it to ya
 
 #include <unicode/uchar.h>
 
@@ -30,6 +30,17 @@ namespace FingerPrintOTron
             {
                 const UChar *ucharTxt = mUS.getTerminatedBuffer();
                 mNGI.reset(new NGramIterator(ucharTxt, u_strlen(ucharTxt), mNGRAM_SIZE));
+            }
+
+            // Takes UTF-32
+            FingerPrintGenerator(const UChar *UTF32Buffer, const uint16_t len, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
+                : mWINNOW_SIZE(WinnowSize),
+                  mNGRAM_SIZE(NGramSize),
+                  mW(0),
+                  mMinHash(0),
+                  mHashFunction(hashFunction)
+            {
+                mNGI.reset(new NGramIterator(UTF32Buffer, len, mNGRAM_SIZE));
             }
 
             void SetMinHash(HASH hash)

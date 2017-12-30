@@ -207,6 +207,7 @@ namespace FingerPrintOTron
             size_t GetMax() const { return mMax; }
             size_t GetMin() const { return mMin; }
             size_t GetTotal() const { return mTotal; }
+            size_t GetPercentage() const { return std::max(GetPercentageRHS(),GetPercentageLHS()); } 
             size_t GetPercentageRHS() const { return mPercentageRHS; }
             size_t GetPercentageLHS() const { return mPercentageLHS; }
 

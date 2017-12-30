@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     std::cout << "Min consecutive hash " << result.GetMin() << std::endl
         << "Max consecutive hash " << result.GetMax()  << std::endl
         << "Total matching hashes " << result.GetTotal() << std::endl
-        << "Percentage " << std::max(result.GetPercentageRHS(),result.GetPercentageLHS()) << "%" << std::endl;
+        << "Percentage " << result.GetPercentage() << "%" << std::endl;
 
     return 0;
 }

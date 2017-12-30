@@ -1,3 +1,5 @@
+#include <unicode/uchar.h>
+
 #include "test.h"
 
 #include "fingerprintgenerator.h"
@@ -67,8 +69,26 @@ void TestSigMod()
     ASSERT( result[i] == fp.GetHash() );
 }
 
+void TestSigModWide()
+{
+    const std::string testChars = "A do run run run, a do run run";
+    UnicodeString us(UnicodeString::fromUTF8(testChars.c_str()));
+    const UChar *ucharTxt = us.getTerminatedBuffer();
+
+    std::vector<HASH> result = { 33081, 5729, 7412, 33081, 5729 };
+    FingerPrintGenerator<Hasher> fp(ucharTxt,testChars.size(),5,4,Hasher());
+    int i = 0;
+    while (fp.Next())
+    {
+        ASSERT( result[i] == fp.GetHash() );
+        i++;
+    }
+    ASSERT( result[i] == fp.GetHash() );
+}
+
 int main(int argc, char* argv[])
 {
+    TestSigModWide();
     TestSigMod();
     TestSimple();
     TestLeftover();
