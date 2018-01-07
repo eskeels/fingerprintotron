@@ -54,6 +54,16 @@ const std::string tale_of_2_cities = "At last, the top of the staircase was gain
                                     " dreaded to be asked any question by the young lady, turned himself about"
                                     " here, and, carefully feeling in the pockets of the coat he carried over"
                                     " his shoulder, took out a key.";
+
+const std::string japanese = "大阪大（大阪府吹田市）は６日、２０１７年２月に実施した工学部や理学部など６学部の"
+                             "一般入試（前期日程）の物理で出題と採点にミスがあり、本来なら合格していた３０人を"
+                             "不合格にしていたと発表した。 　全員を追加合格とし、希望者は今年４月に１～２年生で"
+                             "の転入学を認める。他大学や予備校に通うなどしているとみられ、授業料などの補償や慰"
+                             "謝料の支払いを行う。大阪大は昨年、２度にわたり外部から「誤りがある」との指摘を受け"
+                             "たにもかかわらず、適切な対応をしていなかった。";
+
+const std::string japanese_line_4 = "の転入学を認める。他大学や予備校に通うなどしているとみられ、授業料などの補償や慰";
+
 // compare same string
 void TestSame()
 {
@@ -120,7 +130,28 @@ void TestEncased()
     ASSERT(76 == cr->GetPercentageLHS());
     }
 }
+// testing some multiple byte UTF-8
+void TestJapaneseNoMatch()
+{
+    std::shared_ptr<ComparisonResult> cr = CompareText(japanese, sherlock);
+    ASSERT(0 == cr->GetPercentage());
+}
 
+void TestJapaneseSame()
+{
+    std::shared_ptr<ComparisonResult> cr = CompareText(japanese, japanese);
+    ASSERT(100 == cr->GetPercentage());
+}
+
+void TestJapaneseMatch()
+{
+    std::string str(sherlock);
+    str.append(japanese_line_4);
+    str.append(tale_of_2_cities);
+
+    std::shared_ptr<ComparisonResult> cr = CompareText(japanese, str);
+    ASSERT(18 == cr->GetPercentage());
+}
 int main(int argc, char* argv[])
 {
     TestSame();
@@ -129,6 +160,9 @@ int main(int argc, char* argv[])
     TestOneCharDiff();
     TestHalfDiff();
     TestEncased();
+    TestJapaneseNoMatch();
+    TestJapaneseSame();
+    TestJapaneseMatch();
     return 0;
 }
 
