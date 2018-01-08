@@ -9,7 +9,6 @@
 
 #include <unicode/uchar.h>
 
-#include "hasher.h"
 #include "ngramiterator.h"
 #include "document.h"
 
@@ -19,7 +18,7 @@ namespace FingerPrintOTron
     class FingerPrintGenerator
     {
         public:
-            // Takes UTF-8
+            // Takes a null terminated UTF-8
             FingerPrintGenerator(const char *UTF8Buffer, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
                 : mWINNOW_SIZE(WinnowSize),
                   mNGRAM_SIZE(NGramSize),
@@ -32,7 +31,7 @@ namespace FingerPrintOTron
                 mNGI.reset(new NGramIterator(ucharTxt, u_strlen(ucharTxt), mNGRAM_SIZE));
             }
 
-            // Takes UTF-32
+            // Takes UTF-32. len is the number of UTF32 characters.
             FingerPrintGenerator(const UChar *UTF32Buffer, const uint16_t len, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
                 : mWINNOW_SIZE(WinnowSize),
                   mNGRAM_SIZE(NGramSize),
@@ -43,6 +42,7 @@ namespace FingerPrintOTron
                 mNGI.reset(new NGramIterator(UTF32Buffer, len, mNGRAM_SIZE));
             }
 
+            // Records the minimum hash
             void SetMinHash(HASH hash)
             {
                 // if in first winnow the use that hash
@@ -57,11 +57,13 @@ namespace FingerPrintOTron
                 }
             }
 
+            // Gets the hash of the next NGram and
+            // records it if its the minimum for the
+            // WINNOW
             bool Next()
             {
                 while (mNGI->Next())
                 {
-//                    HASH hash = GenerateHash(mNGI->GetNGram());
                     HASH hash = mHashFunction(mNGI->GetNGram());
 
                     SetMinHash(hash);
@@ -81,12 +83,9 @@ namespace FingerPrintOTron
 
                 return false;
             }
-/*
-            virtual HASH GenerateHash(const std::vector<UChar32>& word) const
-            {
-                return Hasher::GenerateHash(word);
-            }
-*/
+
+            // This algorithm uses the minimum
+            // hash calculaed for the WINNOW
             HASH GetHash() const
             {
                 return mMinHash;
@@ -94,6 +93,8 @@ namespace FingerPrintOTron
 
             // Once Next() has returned false this
             // will see if there is a left over hash
+            // due to the buffer not being evenly
+            // divisible by the WINNOW
             bool Leftover() const
             {
                 return (mW != 0);
@@ -117,12 +118,20 @@ namespace FingerPrintOTron
             }
 
         protected:
+            // WINNOW size
             const uint16_t mWINNOW_SIZE;
+            // NGRAM size
             const uint16_t mNGRAM_SIZE;
+            // NGRAM iterator
             std::shared_ptr<NGramIterator> mNGI;
+            // The current WINNOW. Resets when
+            // it gets to mWINNOW_SIZE
             uint16_t mW;
+            // The minimum has for the WINNOW
             HASH mMinHash;
+            // The ICU Unicode string for the input buffer
             UnicodeString mUS;
+            // The hash function
             HASHFUNCTION mHashFunction;
     };
 }
