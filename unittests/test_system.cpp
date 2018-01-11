@@ -68,15 +68,15 @@ const std::string japanese_line_4 = "の転入学を認める。他大学や予�
 void TestSame()
 {
     std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlock);
-    ASSERT(100 == cr->GetPercentageRHS());
-    ASSERT(100 == cr->GetPercentageLHS());
+    ASSERT(100 == cr->GetPercentageSecond());
+    ASSERT(100 == cr->GetPercentageFirst());
 }
 // compare 2 different strings
 void TestDifferent()
 {
     std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, tale_of_2_cities);
-    ASSERT(0 == cr->GetPercentageRHS());
-    ASSERT(0 == cr->GetPercentageLHS());
+    ASSERT(0 == cr->GetPercentageSecond());
+    ASSERT(0 == cr->GetPercentageFirst());
 }
 // compare same string but one version is upper case and
 // the other is lower case
@@ -88,8 +88,8 @@ void TestUpperLower()
     std::transform(sherlockUpper.begin(), sherlockUpper.end(), sherlockUpper.begin(), ::toupper); 
     std::transform(sherlockLower.begin(), sherlockLower.end(), sherlockLower.begin(), ::tolower); 
     std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlock);
-    ASSERT(100 == cr->GetPercentageRHS());
-    ASSERT(100 == cr->GetPercentageLHS());
+    ASSERT(100 == cr->GetPercentageSecond());
+    ASSERT(100 == cr->GetPercentageFirst());
 }
 // compare the same string but one character in the middle
 // has been changed to a "."
@@ -99,8 +99,8 @@ void TestOneCharDiff()
     sherlockOneCharDiff[sherlockOneCharDiff.size()/2] = '.';
     std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlockOneCharDiff);
 
-    ASSERT(91 == cr->GetPercentageRHS());
-    ASSERT(91 == cr->GetPercentageLHS());
+    ASSERT(91 == cr->GetPercentageSecond());
+    ASSERT(91 == cr->GetPercentageFirst());
 }
 // compare whole string to half
 void TestHalfDiff()
@@ -108,8 +108,8 @@ void TestHalfDiff()
     std::string sherlockHalf(sherlock,sherlock.size()/2);
     std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlockHalf);
 
-    ASSERT(92 == cr->GetPercentageRHS());
-    ASSERT(45 == cr->GetPercentageLHS());
+    ASSERT(92 == cr->GetPercentageSecond());
+    ASSERT(45 == cr->GetPercentageFirst());
 }
 // create a string that has tale_of_2_cities with sherlock either side
 void TestEncased()
@@ -120,14 +120,14 @@ void TestEncased()
 
     {
     std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, str);
-    ASSERT(35 == cr->GetPercentageRHS());
-    ASSERT(100 == cr->GetPercentageLHS());
+    ASSERT(35 == cr->GetPercentageSecond());
+    ASSERT(100 == cr->GetPercentageFirst());
     }
 
     {
     std::shared_ptr<ComparisonResult> cr = CompareText(tale_of_2_cities, str);
-    ASSERT(21 == cr->GetPercentageRHS());
-    ASSERT(76 == cr->GetPercentageLHS());
+    ASSERT(21 == cr->GetPercentageSecond());
+    ASSERT(76 == cr->GetPercentageFirst());
     }
 }
 // testing some multiple byte UTF-8

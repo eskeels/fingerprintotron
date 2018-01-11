@@ -28,8 +28,8 @@ void TestEmpty()
     ASSERT(result.GetMin() == 0);
     ASSERT(result.GetMax() == 0);
     ASSERT(result.GetTotal() == 0);
-    ASSERT(result.GetPercentageRHS() == 0);
-    ASSERT(result.GetPercentageLHS() == 0);
+    ASSERT(result.GetPercentageSecond() == 0);
+    ASSERT(result.GetPercentageFirst() == 0);
 }
 
 void TestMatch1HashExact()
@@ -50,8 +50,8 @@ void TestMatch1HashExact()
     ASSERT(result.GetMin() == 1);
     ASSERT(result.GetMax() == 1);
     ASSERT(result.GetTotal() == 1);
-    ASSERT(result.GetPercentageRHS() == 100);
-    ASSERT(result.GetPercentageLHS() == 100);
+    ASSERT(result.GetPercentageSecond() == 100);
+    ASSERT(result.GetPercentageFirst() == 100);
 }
 
 void TestMatch3HashExact()
@@ -78,8 +78,8 @@ void TestMatch3HashExact()
     ASSERT(result.GetMin() == 3);
     ASSERT(result.GetMax() == 3);
     ASSERT(result.GetTotal() == 3);
-    ASSERT(result.GetPercentageRHS() == 100);
-    ASSERT(result.GetPercentageLHS() == 100);
+    ASSERT(result.GetPercentageSecond() == 100);
+    ASSERT(result.GetPercentageFirst() == 100);
 
 }
 
@@ -110,8 +110,8 @@ void TestOverwrite()
     ASSERT(result.GetMin() == 3);
     ASSERT(result.GetMax() == 3);
     ASSERT(result.GetTotal() == 3);
-    ASSERT(result.GetPercentageRHS() == 60);
-    ASSERT(result.GetPercentageLHS() == 100);
+    ASSERT(result.GetPercentageSecond() == 60);
+    ASSERT(result.GetPercentageFirst() == 100);
 }
 
 void TestSkip()
@@ -142,8 +142,8 @@ void TestSkip()
     ASSERT(result.GetMin() == 3);
     ASSERT(result.GetMax() == 3);
     ASSERT(result.GetTotal() == 3);
-    ASSERT(result.GetPercentageRHS() == 60);
-    ASSERT(result.GetPercentageLHS() == 100);
+    ASSERT(result.GetPercentageSecond() == 60);
+    ASSERT(result.GetPercentageFirst() == 100);
 }
 
 void TestNoMatch()
@@ -168,8 +168,8 @@ void TestNoMatch()
     ASSERT(result.GetMin() == 0);
     ASSERT(result.GetMax() == 0);
     ASSERT(result.GetTotal() == 0);
-    ASSERT(result.GetPercentageRHS() == 0);
-    ASSERT(result.GetPercentageLHS() == 0);
+    ASSERT(result.GetPercentageSecond() == 0);
+    ASSERT(result.GetPercentageFirst() == 0);
 }
 
 void TestMatch2Hashes()
@@ -198,8 +198,8 @@ void TestMatch2Hashes()
     ASSERT(result.GetMin() == 2);
     ASSERT(result.GetMax() == 2);
     ASSERT(result.GetTotal() == 2);
-    ASSERT(result.GetPercentageRHS() == 50);
-    ASSERT(result.GetPercentageLHS() == 50);
+    ASSERT(result.GetPercentageSecond() == 50);
+    ASSERT(result.GetPercentageFirst() == 50);
 }
 
 void TestRemoveOverlap()
@@ -231,8 +231,8 @@ void TestRemoveOverlap()
     ASSERT(result.GetMin() == 3);
     ASSERT(result.GetMax() == 3);
     ASSERT(result.GetTotal() == 3);
-    ASSERT(result.GetPercentageRHS() == 60);
-    ASSERT(result.GetPercentageLHS() == 100);
+    ASSERT(result.GetPercentageSecond() == 60);
+    ASSERT(result.GetPercentageFirst() == 100);
     }
 
     {
@@ -263,8 +263,8 @@ void TestRemoveOverlap()
     ASSERT(result.GetMin() == 3);
     ASSERT(result.GetMax() == 3);
     ASSERT(result.GetTotal() == 3);
-    ASSERT(result.GetPercentageRHS() == 60);
-    ASSERT(result.GetPercentageLHS() == 100);
+    ASSERT(result.GetPercentageSecond() == 60);
+    ASSERT(result.GetPercentageFirst() == 100);
     }
 }
 
@@ -302,8 +302,8 @@ void TestDoNotRemoveOverlap()
     ASSERT(result.GetMin() == 1);
     ASSERT(result.GetMax() == 2);
     ASSERT(result.GetTotal() == 3);
-    ASSERT(result.GetPercentageRHS() == 75);
-    ASSERT(result.GetPercentageLHS() == 75);
+    ASSERT(result.GetPercentageSecond() == 75);
+    ASSERT(result.GetPercentageFirst() == 75);
     }
 
     {
@@ -328,8 +328,8 @@ void TestDoNotRemoveOverlap()
     ASSERT(result.GetMin() == 1);
     ASSERT(result.GetMax() == 2);
     ASSERT(result.GetTotal() == 3);
-    ASSERT(result.GetPercentageRHS() == 75);
-    ASSERT(result.GetPercentageLHS() == 75);
+    ASSERT(result.GetPercentageSecond() == 75);
+    ASSERT(result.GetPercentageFirst() == 75);
     }
 }
 
@@ -360,8 +360,8 @@ void TestWithinNextIt()
     ASSERT(result.GetMin() == 3);
     ASSERT(result.GetMax() == 3);
     ASSERT(result.GetTotal() == 3);
-    ASSERT(result.GetPercentageRHS() == 60);
-    ASSERT(result.GetPercentageLHS() == 42);
+    ASSERT(result.GetPercentageSecond() == 60);
+    ASSERT(result.GetPercentageFirst() == 42);
     }
 
     {
@@ -372,8 +372,8 @@ void TestWithinNextIt()
     ASSERT(result.GetMin() == 3);
     ASSERT(result.GetMax() == 3);
     ASSERT(result.GetTotal() == 3);
-    ASSERT(result.GetPercentageRHS() == 42);
-    ASSERT(result.GetPercentageLHS() == 60);
+    ASSERT(result.GetPercentageSecond() == 42);
+    ASSERT(result.GetPercentageFirst() == 60);
     }
 }
 

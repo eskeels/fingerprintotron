@@ -14,13 +14,15 @@ namespace FingerPrintOTron
     {
         public:
             ComparisonResult()
-                : mHashCountRHS(0),
-                  mHashCountLHS(0),
+                : mHashCountSecond(0),
+                  mHashCountFirst(0),
                   mMax(0),
                   mMin(0),
                   mTotal(0),
-                  mPercentageRHS(0),
-                  mPercentageLHS(0)
+                  mPercentageSecond(0),
+                  mPercentageFirst(0),
+                  mNameFirst(),
+                  mNameSecond()
             {
             }
 
@@ -168,11 +170,11 @@ namespace FingerPrintOTron
                 return mHashMap.empty();
             }
             
-            void CalculatePercentages(size_t totalSignatures, size_t& percentageRHS, size_t& percentageLHS) const
+            void CalculatePercentages(size_t totalSignatures, size_t& percentageSecond, size_t& percentageFirst) const
             {
                 float fTotalSignatures = totalSignatures;
-                percentageRHS = static_cast<size_t>(100.0 * (fTotalSignatures / float(mHashCountRHS)));
-                percentageLHS = static_cast<size_t>(100.0 * (fTotalSignatures / float(mHashCountLHS)));
+                percentageSecond = static_cast<size_t>(100.0 * (fTotalSignatures / float(mHashCountSecond)));
+                percentageFirst = static_cast<size_t>(100.0 * (fTotalSignatures / float(mHashCountFirst)));
             }
 
             void AnalyzeResults() 
@@ -195,11 +197,11 @@ namespace FingerPrintOTron
                         }
                         mTotal += fpSz;
                     }
-                    CalculatePercentages(mTotal, mPercentageRHS, mPercentageLHS);
+                    CalculatePercentages(mTotal, mPercentageSecond, mPercentageFirst);
                 }
                 else
                 {
-                    mMin = mMax = mTotal = mPercentageRHS = mPercentageLHS = 0;
+                    mMin = mMax = mTotal = mPercentageSecond = mPercentageFirst = 0;
                 }
 
             }
@@ -207,29 +209,51 @@ namespace FingerPrintOTron
             size_t GetMax() const { return mMax; }
             size_t GetMin() const { return mMin; }
             size_t GetTotal() const { return mTotal; }
-            size_t GetPercentage() const { return std::max(GetPercentageRHS(),GetPercentageLHS()); } 
-            size_t GetPercentageRHS() const { return mPercentageRHS; }
-            size_t GetPercentageLHS() const { return mPercentageLHS; }
+            size_t GetPercentage() const { return std::max(GetPercentageSecond(),GetPercentageFirst()); } 
+            size_t GetPercentageSecond() const { return mPercentageSecond; }
+            size_t GetPercentageFirst() const { return mPercentageFirst; }
 
-            void SetHashCountRHS(size_t c)
+            void SetHashCountSecond(size_t c)
             {
-                mHashCountRHS = c;
+                mHashCountSecond = c;
             }
 
-            void SetHashCountLHS(size_t c)
+            void SetHashCountFirst(size_t c)
             {
-                mHashCountLHS = c;
+                mHashCountFirst = c;
+            }
+
+            void SetNameFirst(const std::string& name)
+            {
+                mNameFirst = name;
+            }
+
+            void SetNameSecond(const std::string& name)
+            {
+                mNameSecond = name;
+            }
+
+            const std::string& GetNameFirst() const
+            {
+                return mNameFirst;
+            }
+
+            const std::string& GetNameSecond() const
+            {
+                return mNameSecond;
             }
 
         protected:
             std::multimap<size_t,std::shared_ptr<std::vector<HASH> > > mHashMap;
-            size_t mHashCountRHS;
-            size_t mHashCountLHS;
+            size_t mHashCountSecond;
+            size_t mHashCountFirst;
             size_t mMax;
             size_t mMin;
             size_t mTotal;
-            size_t mPercentageRHS;
-            size_t mPercentageLHS;
+            size_t mPercentageSecond;
+            size_t mPercentageFirst;
+            std::string mNameFirst;
+            std::string mNameSecond;
     };
 }
 

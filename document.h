@@ -45,36 +45,38 @@ namespace FingerPrintOTron
             }
         }
 
-        void Compare(const Document& RHS, ComparisonResult& result) const
+        void Compare(const Document& Second, ComparisonResult& result) const
         {
-            result.SetHashCountRHS(RHS.mHashes.size());
-            result.SetHashCountLHS(mHashes.size());
+            result.SetNameFirst(this->GetName());
+            result.SetNameSecond(Second.GetName());
+            result.SetHashCountSecond(Second.mHashes.size());
+            result.SetHashCountFirst(mHashes.size());
 
-            std::vector<HASH>::const_iterator hashItRHS = RHS.mHashes.begin();
+            std::vector<HASH>::const_iterator hashItSecond = Second.mHashes.begin();
 
-            for (; hashItRHS != RHS.mHashes.end(); ++hashItRHS)
+            for (; hashItSecond != Second.mHashes.end(); ++hashItSecond)
             {
-                std::shared_ptr<POSITIONS> p = Find(*hashItRHS);
+                std::shared_ptr<POSITIONS> p = Find(*hashItSecond);
                 if (p)
                 {
-                    size_t posRHS = std::distance(RHS.mHashes.begin(), hashItRHS);
+                    size_t posSecond = std::distance(Second.mHashes.begin(), hashItSecond);
                     // this is all the positions that the hash occurs
-                    for (uint16_t posLHS : *p)
+                    for (uint16_t posFirst : *p)
                     {
-                        uint16_t pos2 = posLHS;
-                        std::vector<HASH>::const_iterator hashFwdRHS = hashItRHS;
+                        uint16_t pos2 = posFirst;
+                        std::vector<HASH>::const_iterator hashFwdSecond = hashItSecond;
                         int count = 0;
                         std::shared_ptr<std::vector<HASH> > hashSequence(new std::vector<HASH>()); 
                         while (pos2 < mHashes.size() &&
-                                (mHashes[pos2] == *hashFwdRHS) && 
-                                (hashFwdRHS != RHS.mHashes.end()))
+                                (mHashes[pos2] == *hashFwdSecond) && 
+                                (hashFwdSecond != Second.mHashes.end()))
                         {
                             hashSequence->push_back(mHashes[pos2]);
                             ++count;
                             ++pos2;
-                            ++hashFwdRHS;
+                            ++hashFwdSecond;
                         }
-                        result.AddHash(posLHS,hashSequence);
+                        result.AddHash(posFirst,hashSequence);
                     }
                 }
             }
@@ -89,6 +91,11 @@ namespace FingerPrintOTron
                 return it->second;
             }
             return NULL;
+        }
+
+        const std::string& GetName() const
+        {
+            return mName;
         }
 
         protected:
