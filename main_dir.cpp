@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <set>
 
 #include <unicode/uchriter.h>
 #include <unicode/ustdio.h>
@@ -79,6 +80,97 @@ std::shared_ptr<Document> HashFile(const std::string& filename)
     return doc;
 }
 
+class DocumentCollectionAnalyser
+{
+    public:
+        DocumentCollectionAnalyser(std::vector<std::shared_ptr<Document> >& docs)
+            : mDocuments(docs)
+        {
+        }
+
+        std::shared_ptr<std::set<std::string> > FindFileSet(const std::string& first, const std::string& second)
+        {
+            if (mListFileSets.empty())
+            {
+                std::shared_ptr<std::set<std::string> > newFileSet(new std::set<std::string>());
+                mListFileSets.push_back(newFileSet);
+
+                return newFileSet;
+            }
+            else
+            {
+                for (auto it = mListFileSets.begin() ; it != mListFileSets.end(); ++it)
+                {
+                    std::set<std::string>& fileSet = *(*it);
+
+                    if ( fileSet.end() != fileSet.find(first) || fileSet.end() != fileSet.find(second) )
+                    {
+                        return *it;
+                    }
+                    else
+                    {
+                        std::shared_ptr<std::set<std::string> > newFileSet(new std::set<std::string>());
+                        mListFileSets.push_back(newFileSet);
+                        return newFileSet;
+                    }
+                }
+            }
+
+            return NULL;
+        }
+
+        void RecordResult(ComparisonResult& cr)
+        {
+            std::shared_ptr<std::set<std::string> > fileSet( FindFileSet(cr.GetNameFirst(), cr.GetNameSecond()) );
+            if (fileSet)
+            {
+                fileSet->insert( cr.GetNameFirst() );
+                fileSet->insert( cr.GetNameSecond() );
+            }
+        }
+
+        void AnalysePair(const Document& first, const Document& second)
+        {
+            std::shared_ptr<ComparisonResult> result(new ComparisonResult);
+            first.Compare(second,*result);
+            result->AnalyzeResults();
+//            std::cout << result->GetNameFirst() << " - " << result->GetNameSecond() << " %" << result->GetPercentage() << std::endl;
+            if (result->GetPercentage() >= 20)
+            {
+                RecordResult(*result);
+            }
+        }
+
+        void Analyse()
+        {
+            for (size_t i = 0; i < mDocuments.size(); ++i)
+            {
+                for (size_t j = i+1; j < mDocuments.size(); ++j)
+                {
+                    AnalysePair(*mDocuments[i], *mDocuments[j]);
+               }
+            }
+        }
+
+        void Dump()
+        {
+            for (auto it = mListFileSets.begin() ; it != mListFileSets.end(); ++it)
+            {
+                std::set<std::string>& fileSet = *(*it);
+                for (auto fileIt = fileSet.begin(); fileIt != fileSet.end(); ++fileIt)
+                {
+                    std::cout << *fileIt << " , ";
+                }
+                std::cout << std::endl;
+            }
+            std::cout << std::endl;
+        }
+
+    protected:
+        std::vector<std::shared_ptr<Document> >& mDocuments;
+        std::vector<std::shared_ptr<std::set<std::string> > > mListFileSets;
+};
+
 int main(int argc, char* argv[])
 {
     std::string dirName;
@@ -97,7 +189,7 @@ int main(int argc, char* argv[])
     }
 
     std::vector<std::shared_ptr<Document> > docs;
-    
+
     for (const std::string& f : filesToFP)
     {
         std::cout << "Processing file:" << f << std::endl;
@@ -105,36 +197,11 @@ int main(int argc, char* argv[])
         docs.push_back(doc);
     }
 
-    for (size_t i = 0; i < docs.size(); ++i)
-    {
-        for (size_t j = i+1; j < docs.size(); ++j)
-        {
-//            std::cout << i  << " " << j << std::endl;
-            std::shared_ptr<ComparisonResult> result(new ComparisonResult);
-            docs[i]->Compare(*docs[j],*result);
-            std::cout << result->GetNameFirst() << " - " << result->GetNameSecond() << " %" << result->GetPercentage() << std::endl;
-        }
-    }
-/* 
-    ComparisonResult result;
+    DocumentCollectionAnalyser dca(docs);
 
-    docs[0]->Compare(*(docs[1]),result);
-    std::stringstream ss;
-    result.Dump(ss);
-    std::cout << ss.str() << std::endl;
-    std::cout << "---------------------" << std::endl;
-    result.RemoveOverlaps();
-    std::cout << "---------------------" << std::endl;
-    std::stringstream ss2;
-    result.Dump(ss2);
-    std::cout << ss2.str() << std::endl;
+    dca.Analyse();
+    dca.Dump();
 
-    result.AnalyzeResults();
-    std::cout << "Min consecutive hash " << result.GetMin() << std::endl
-        << "Max consecutive hash " << result.GetMax()  << std::endl
-        << "Total matching hashes " << result.GetTotal() << std::endl
-        << "Percentage " << std::max(result.GetPercentageRHS(),result.GetPercentageLHS()) << "%" << std::endl;
-*/
     return 0;
 }
 
