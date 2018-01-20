@@ -1,32 +1,70 @@
-// Public Domain kick in it to ya
-
-//#include <dirent.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <memory>
+#include <map>
+#include <set>
+
+#include <unicode/uchriter.h>
+#include <unicode/ustdio.h>
+#include <unicode/utypes.h>
+#include <unicode/uchar.h>
 
 #include "hasher.h"
+#include "ngramiterator.h"
 #include "fingerprintgenerator.h"
 #include "document.h"
 #include "comparisonresult.h"
 
 using namespace FingerPrintOTron;
 
-const uint16_t NGRAM = 10; 
-const uint16_t WINNOWSIZE = 9;
-
-int ParseCmdLine(int argc, char* argv[], std::string& firstFile, std::string& secondFile)
+int ParseCmdLine(int argc, char* argv[], std::vector<std::string>& fnames)
 {
-    if (argc!=3)
+    if (argc<=1)
     {
-        std::cerr << "Invalid command line options. Need 2 UTF-8 files to compare." << std::endl;
+        std::cerr << "Invalid command line options. Need directory or files to process." << std::endl;
+        return EXIT_FAILURE;
+    }
+    else
+    {
+        for (size_t i = 1; i < argc ; ++i)
+        {
+            fnames.push_back(std::string(argv[i]));
+        }
+    }
+    return 0;
+}
+
+int GetFilesToProcess(const std::string& dirName, std::vector<std::string>& filesToFP)
+{
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir (dirName.c_str())) != NULL)
+    {
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL)
+        {
+            std::string f(ent->d_name);
+            if (!f.empty() && f[0] != '.')
+            {
+                filesToFP.push_back(dirName+"/"+f);
+            }
+        }
+        closedir (dir);
+    }
+    else
+    {
+        std::cerr << "Failed to open " << dirName << std::endl; 
+        /* could not open directory */
+        perror ("");
         return EXIT_FAILURE;
     }
 
-    firstFile.assign(argv[1]);
-    secondFile.assign(argv[2]);
-
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 void ReadFile(const std::string& filename, std::string& buffer)
@@ -48,32 +86,176 @@ std::shared_ptr<Document> HashFile(const std::string& filename)
     return doc;
 }
 
+class DocumentCollectionAnalyser
+{
+    public:
+        DocumentCollectionAnalyser(std::vector<std::shared_ptr<Document> >& docs)
+            : mDocuments(docs)
+        {
+        }
+
+        std::shared_ptr<std::set<std::string> > FindFileSet(const std::string& first, const std::string& second)
+        {
+            if (mListFileSets.empty())
+            {
+                std::shared_ptr<std::set<std::string> > newFileSet(new std::set<std::string>());
+                mListFileSets.push_back(newFileSet);
+
+                return newFileSet;
+            }
+            else
+            {
+                for (auto it = mListFileSets.begin() ; it != mListFileSets.end(); ++it)
+                {
+                    std::set<std::string>& fileSet = *(*it);
+
+                    if ( fileSet.end() != fileSet.find(first) || fileSet.end() != fileSet.find(second) )
+                    {
+                        return *it;
+                    }
+                    else
+                    {
+                        std::shared_ptr<std::set<std::string> > newFileSet(new std::set<std::string>());
+                        mListFileSets.push_back(newFileSet);
+                        return newFileSet;
+                    }
+                }
+            }
+
+            return NULL;
+        }
+
+        void RecordResult(ComparisonResult& cr)
+        {
+            std::cout << cr.GetNameFirst() << " - " << cr.GetNameSecond() << " %" << cr.GetPercentage() << std::endl;
+            if (cr.GetPercentage() >= 20)
+            {
+                std::shared_ptr<std::set<std::string> > fileSet( FindFileSet(cr.GetNameFirst(), cr.GetNameSecond()) );
+                if (fileSet)
+                {
+                    fileSet->insert( cr.GetNameFirst() );
+                    fileSet->insert( cr.GetNameSecond() );
+                }
+            }
+        }
+
+        void AnalysePair(const Document& first, const Document& second)
+        {
+            std::shared_ptr<ComparisonResult> result(new ComparisonResult);
+            first.Compare(second,*result);
+            result->AnalyzeResults();
+            RecordResult(*result);
+        }
+
+        void Analyse()
+        {
+            for (size_t i = 0; i < mDocuments.size(); ++i)
+            {
+                for (size_t j = i+1; j < mDocuments.size(); ++j)
+                {
+                    AnalysePair(*mDocuments[i], *mDocuments[j]);
+               }
+            }
+        }
+
+        void Dump()
+        {
+            std::cout << "Similar documents" << std::endl;
+            for (auto it = mListFileSets.begin() ; it != mListFileSets.end(); ++it)
+            {
+                std::set<std::string>& fileSet = *(*it);
+                for (auto fileIt = fileSet.begin(); fileIt != fileSet.end(); ++fileIt)
+                {
+                    std::cout << *fileIt << " , ";
+                }
+                std::cout << std::endl;
+            }
+            std::cout << std::endl;
+        }
+
+    protected:
+        std::vector<std::shared_ptr<Document> >& mDocuments;
+        std::vector<std::shared_ptr<std::set<std::string> > > mListFileSets;
+};
+
+bool IsFile(const std::string& name)
+{
+    bool bExists;
+    if (FILE *file = fopen(name.c_str(), "r"))
+    {
+        fclose(file);
+        bExists = true;
+    }
+    else
+    {
+        bExists = false;
+    }
+
+    return bExists;
+}
+
+bool IsDir(const std::string& name)
+{
+    DIR *pDir;
+    bool bExists = false;
+
+    pDir = opendir (name.c_str());
+
+    if (pDir != NULL)
+    {
+        bExists = true;    
+        (void) closedir (pDir);
+    }
+
+    return bExists;
+}
+
 int main(int argc, char* argv[])
 {
-    std::string file1,file2;
-
-    int ret = ParseCmdLine(argc, argv, file1, file2);
-    if (ret != EXIT_SUCCESS)
+    std::vector<std::string> fileNames;
+    int ret = ParseCmdLine(argc, argv, fileNames);
+    if (ret != 0)
     {
         return ret;
     }
 
-    std::shared_ptr<Document> doc1(HashFile(file1));
-    std::shared_ptr<Document> doc2(HashFile(file2));
+    std::vector<std::string> filesToFP;
 
-    ComparisonResult result;
+    for (size_t i = 0; i < fileNames.size() && ret == 0; ++i)
+    {
+        if (IsDir(fileNames[i]))
+        {
+            ret = GetFilesToProcess(fileNames[i], filesToFP);
+        }
+        else if (IsFile(fileNames[i]))
+        {
+            filesToFP.push_back(fileNames[i]);
+        }
+        else
+        {
+            std::cout << "Unknown parameter " << fileNames[i] << std::endl;
+            ret = -1;
+        }
+    }
 
-    doc1->Compare(*doc2,result);
+    if (ret != 0)
+    {
+        return ret;
+    }
 
-    std::stringstream ss;
-    result.Dump(ss);
-    std::cout << ss.str() << std::endl;
+    std::vector<std::shared_ptr<Document> > docs;
 
-    result.AnalyzeResults();
-    std::cout << "Min consecutive hash " << result.GetMin() << std::endl
-        << "Max consecutive hash " << result.GetMax()  << std::endl
-        << "Total matching hashes " << result.GetTotal() << std::endl
-        << "Percentage " << result.GetPercentage() << "%" << std::endl;
+    for (const std::string& f : filesToFP)
+    {
+        std::cout << "Processing file:" << f << std::endl;
+        std::shared_ptr<Document> doc(HashFile(f));
+        docs.push_back(doc);
+    }
+
+    DocumentCollectionAnalyser dca(docs);
+
+    dca.Analyse();
+    dca.Dump();
 
     return 0;
 }

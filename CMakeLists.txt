@@ -13,11 +13,8 @@ endif(COVERAGE)
 
 add_library (fingerprinter SHARED murmur3.c)
 
-add_executable (comparefiles main.cpp)
-target_link_libraries(comparefiles fingerprinter icudata icuio icuuc)
-
-add_executable (comparedir main_dir.cpp)
-target_link_libraries(comparedir fingerprinter icudata icuio icuuc)
+add_executable (compare main.cpp)
+target_link_libraries(compare fingerprinter icudata icuio icuuc)
 
 
 add_subdirectory(unittests)
