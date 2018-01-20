@@ -1,4 +1,6 @@
 #include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <fstream>
@@ -20,16 +22,20 @@
 
 using namespace FingerPrintOTron;
 
-int ParseCmdLine(int argc, char* argv[], std::string& dirName)
+int ParseCmdLine(int argc, char* argv[], std::vector<std::string>& fnames)
 {
-    if (argc!=2)
+    if (argc<=1)
     {
-        std::cerr << "Invalid command line options. Need directory to process." << std::endl;
+        std::cerr << "Invalid command line options. Need directory or files to process." << std::endl;
         return EXIT_FAILURE;
     }
-
-    dirName.assign(argv[1]);
-
+    else
+    {
+        for (size_t i = 1; i < argc ; ++i)
+        {
+            fnames.push_back(std::string(argv[i]));
+        }
+    }
     return 0;
 }
 
@@ -121,11 +127,15 @@ class DocumentCollectionAnalyser
 
         void RecordResult(ComparisonResult& cr)
         {
-            std::shared_ptr<std::set<std::string> > fileSet( FindFileSet(cr.GetNameFirst(), cr.GetNameSecond()) );
-            if (fileSet)
+            std::cout << cr.GetNameFirst() << " - " << cr.GetNameSecond() << " %" << cr.GetPercentage() << std::endl;
+            if (cr.GetPercentage() >= 20)
             {
-                fileSet->insert( cr.GetNameFirst() );
-                fileSet->insert( cr.GetNameSecond() );
+                std::shared_ptr<std::set<std::string> > fileSet( FindFileSet(cr.GetNameFirst(), cr.GetNameSecond()) );
+                if (fileSet)
+                {
+                    fileSet->insert( cr.GetNameFirst() );
+                    fileSet->insert( cr.GetNameSecond() );
+                }
             }
         }
 
@@ -134,11 +144,7 @@ class DocumentCollectionAnalyser
             std::shared_ptr<ComparisonResult> result(new ComparisonResult);
             first.Compare(second,*result);
             result->AnalyzeResults();
-//            std::cout << result->GetNameFirst() << " - " << result->GetNameSecond() << " %" << result->GetPercentage() << std::endl;
-            if (result->GetPercentage() >= 20)
-            {
-                RecordResult(*result);
-            }
+            RecordResult(*result);
         }
 
         void Analyse()
@@ -154,6 +160,7 @@ class DocumentCollectionAnalyser
 
         void Dump()
         {
+            std::cout << "Similar documents" << std::endl;
             for (auto it = mListFileSets.begin() ; it != mListFileSets.end(); ++it)
             {
                 std::set<std::string>& fileSet = *(*it);
@@ -171,10 +178,42 @@ class DocumentCollectionAnalyser
         std::vector<std::shared_ptr<std::set<std::string> > > mListFileSets;
 };
 
+bool IsFile(const std::string& name)
+{
+    bool bExists;
+    if (FILE *file = fopen(name.c_str(), "r"))
+    {
+        fclose(file);
+        bExists = true;
+    }
+    else
+    {
+        bExists = false;
+    }
+
+    return bExists;
+}
+
+bool IsDir(const std::string& name)
+{
+    DIR *pDir;
+    bool bExists = false;
+
+    pDir = opendir (name.c_str());
+
+    if (pDir != NULL)
+    {
+        bExists = true;    
+        (void) closedir (pDir);
+    }
+
+    return bExists;
+}
+
 int main(int argc, char* argv[])
 {
-    std::string dirName;
-    int ret = ParseCmdLine(argc, argv, dirName);
+    std::vector<std::string> fileNames;
+    int ret = ParseCmdLine(argc, argv, fileNames);
     if (ret != 0)
     {
         return ret;
@@ -182,7 +221,23 @@ int main(int argc, char* argv[])
 
     std::vector<std::string> filesToFP;
 
-    ret = GetFilesToProcess(dirName, filesToFP);
+    for (size_t i = 0; i < fileNames.size() && ret == 0; ++i)
+    {
+        if (IsDir(fileNames[i]))
+        {
+            ret = GetFilesToProcess(fileNames[i], filesToFP);
+        }
+        else if (IsFile(fileNames[i]))
+        {
+            filesToFP.push_back(fileNames[i]);
+        }
+        else
+        {
+            std::cout << "Unknown parameter " << fileNames[i] << std::endl;
+            ret = -1;
+        }
+    }
+
     if (ret != 0)
     {
         return ret;
