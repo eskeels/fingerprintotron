@@ -23,22 +23,9 @@ int ParseCmdLine(int argc, char* argv[], std::vector<std::string>& fnames)
     }
     else
     {
-        std::cout << "Argc " << argc << std::endl;
         for (size_t i = 1; i < argc ; ++i)
         {
-            std::string sArgv(argv[i]);
-            if (sArgv == "--threshold")
-            {
-                ++i;
-                if (i < argc)
-                {
-                    std::cout << argv[i] << std::endl;
-                }
-            }
-            else
-            {
-                fnames.push_back(sArgv);
-            }
+           fnames.push_back(argv[i]);
         }
     }
     return 0;
@@ -157,14 +144,14 @@ int main(int argc, char* argv[])
     }
 
     std::vector<std::shared_ptr<Document> > docs;
-
+    std::cout << "Processing files:" << std::endl;
     for (const std::string& f : filesToFP)
     {
-        std::cout << "Processing file:" << f << std::endl;
+        std::cout << f << std::endl;
         std::shared_ptr<Document> doc(HashFile(f));
         docs.push_back(doc);
     }
-
+    std::cout << std::endl;
     DocumentCollectionAnalyser dca(docs);
 
     dca.Analyse();

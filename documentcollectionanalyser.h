@@ -86,7 +86,7 @@ namespace FingerPrintOTron
                     std::set<std::string>& fileSet = *(*it);
                     for (auto fileIt = fileSet.begin(); fileIt != fileSet.end(); ++fileIt)
                     {
-                        std::cout << *fileIt << " , ";
+                        std::cout << *fileIt << " ";
                     }
                     std::cout << std::endl;
                 }
