@@ -9,8 +9,9 @@ namespace FingerPrintOTron
     class DocumentCollectionAnalyser
     {
         public:
-            DocumentCollectionAnalyser(std::vector<std::shared_ptr<Document> >& docs)
-                : mDocuments(docs)
+            DocumentCollectionAnalyser(std::vector<std::shared_ptr<Document> >& docs, uint16_t threshold)
+                : mDocuments(docs),
+                  mThreshold(threshold)
             {
             }
 
@@ -48,7 +49,7 @@ namespace FingerPrintOTron
             void RecordResult(ComparisonResult& cr)
             {
                 std::cout << cr.GetNameFirst() << " - " << cr.GetNameSecond() << " %" << cr.GetPercentage() << std::endl;
-                if (cr.GetPercentage() >= 20)
+                if (cr.GetPercentage() >= mThreshold)
                 {
                     std::shared_ptr<std::set<std::string> > fileSet( FindFileSet(cr.GetNameFirst(), cr.GetNameSecond()) );
                     if (fileSet)
@@ -69,6 +70,7 @@ namespace FingerPrintOTron
 
             void Analyse()
             {
+                std::cout << "Analysing documents:" << std::endl;
                 for (size_t i = 0; i < mDocuments.size(); ++i)
                 {
                     for (size_t j = i+1; j < mDocuments.size(); ++j)
@@ -76,19 +78,27 @@ namespace FingerPrintOTron
                         AnalysePair(*mDocuments[i], *mDocuments[j]);
                     }
                 }
+                std::cout << std::endl;
             }
 
             void Dump()
             {
-                std::cout << "Similar documents" << std::endl;
-                for (auto it = mListFileSets.begin() ; it != mListFileSets.end(); ++it)
+                if (!mListFileSets.empty())
                 {
-                    std::set<std::string>& fileSet = *(*it);
-                    for (auto fileIt = fileSet.begin(); fileIt != fileSet.end(); ++fileIt)
+                    std::cout << "Similar documents:" << std::endl;
+                    for (auto it = mListFileSets.begin() ; it != mListFileSets.end(); ++it)
                     {
-                        std::cout << *fileIt << " ";
+                        std::set<std::string>& fileSet = *(*it);
+                        for (auto fileIt = fileSet.begin(); fileIt != fileSet.end(); ++fileIt)
+                        {
+                            std::cout << *fileIt << " ";
+                        }
+                        std::cout << std::endl;
                     }
-                    std::cout << std::endl;
+                }
+                else
+                {
+                    std::cout << "No similar documents found." << std::endl;
                 }
                 std::cout << std::endl;
             }
@@ -96,5 +106,6 @@ namespace FingerPrintOTron
         protected:
             std::vector<std::shared_ptr<Document> >& mDocuments;
             std::vector<std::shared_ptr<std::set<std::string> > > mListFileSets;
+            uint16_t mThreshold;
     };
 }
