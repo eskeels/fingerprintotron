@@ -16,11 +16,11 @@ namespace FingerPrintOTron
                 : mIter(text,size),
                   mNGramSize(ngramSize)
             {
-                UChar c = mIter.first();
+                UChar32 c = mIter.first32();
                 StoreChar(c);
             }
 
-            void StoreChar(UChar c)
+            void StoreChar(UChar32 c)
             {
                 if (IsAlphaNumeric(c))
                 {
@@ -42,7 +42,7 @@ namespace FingerPrintOTron
                 UChar c;
                 do
                 {
-                    c = mIter.next();
+                    c = mIter.next32();
                     StoreChar(c);
                 } while(c != CharacterIterator::DONE && mNGram.size() < mNGramSize);
 

@@ -32,14 +32,27 @@ namespace FingerPrintOTron
             }
 
             // Takes UTF-32. len is the number of UTF32 characters.
-            FingerPrintGenerator(const UChar *UTF32Buffer, const uint16_t len, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
+            FingerPrintGenerator(const UChar32 *UTF32Buffer, const uint16_t len, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
+                : mWINNOW_SIZE(WinnowSize),
+                  mNGRAM_SIZE(NGramSize),
+                  mW(0),
+                  mMinHash(0),
+                  mUS(UnicodeString::fromUTF32(UTF32Buffer,len)),
+                  mHashFunction(hashFunction)
+            {
+                const UChar *ucharTxt = mUS.getTerminatedBuffer();
+                mNGI.reset(new NGramIterator(ucharTxt, u_strlen(ucharTxt), mNGRAM_SIZE));
+            }
+
+            // Takes UTF-16. len is the number of UTF16 characters.
+            FingerPrintGenerator(const UChar *UTF16Buffer, const uint16_t len, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
                 : mWINNOW_SIZE(WinnowSize),
                   mNGRAM_SIZE(NGramSize),
                   mW(0),
                   mMinHash(0),
                   mHashFunction(hashFunction)
             {
-                mNGI.reset(new NGramIterator(UTF32Buffer, len, mNGRAM_SIZE));
+                mNGI.reset(new NGramIterator(UTF16Buffer, len, mNGRAM_SIZE));
             }
 
             // Records the minimum hash
