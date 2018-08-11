@@ -4,6 +4,8 @@
 #include <set>
 #include <string>
 
+#include "comparisonresult.h"
+
 namespace FingerPrintOTron
 {
     class DocumentCollectionAnalyser
@@ -46,18 +48,19 @@ namespace FingerPrintOTron
                 return NULL;
             }
 
-            void RecordResult(ComparisonResult& cr)
+            void RecordResult(std::shared_ptr<ComparisonResult> cr)
             {
-                std::cout << cr.GetNameFirst() << " - " << cr.GetNameSecond() << " %" << cr.GetPercentage() << std::endl;
-                if (cr.GetPercentage() >= mThreshold)
+                if (cr->GetPercentage() >= mThreshold)
                 {
-                    std::shared_ptr<std::set<std::string> > fileSet( FindFileSet(cr.GetNameFirst(), cr.GetNameSecond()) );
+                    std::shared_ptr<std::set<std::string> > fileSet( FindFileSet(cr->GetNameFirst(), cr->GetNameSecond()) );
                     if (fileSet)
                     {
-                        fileSet->insert( cr.GetNameFirst() );
-                        fileSet->insert( cr.GetNameSecond() );
+                        fileSet->insert( cr->GetNameFirst() );
+                        fileSet->insert( cr->GetNameSecond() );
                     }
                 }
+
+                mListComparisionResults.push_back(cr);
             }
 
             void AnalysePair(const Document& first, const Document& second)
@@ -65,12 +68,11 @@ namespace FingerPrintOTron
                 std::shared_ptr<ComparisonResult> result(new ComparisonResult);
                 first.Compare(second,*result);
                 result->AnalyzeResults();
-                RecordResult(*result);
+                RecordResult(result);
             }
 
             void Analyse()
             {
-                std::cout << "Analysing documents:" << std::endl;
                 for (size_t i = 0; i < mDocuments.size(); ++i)
                 {
                     for (size_t j = i+1; j < mDocuments.size(); ++j)
@@ -78,34 +80,41 @@ namespace FingerPrintOTron
                         AnalysePair(*mDocuments[i], *mDocuments[j]);
                     }
                 }
-                std::cout << std::endl;
             }
 
-            void Dump()
+            void Dump(std::stringstream& out)
             {
+                for (auto cr : mListComparisionResults)
+                {
+                    out << cr->GetNameFirst() << " - " << cr->GetNameSecond() << " %" << cr->GetPercentage() << std::endl;
+                }
+                out << std::endl;
                 if (!mListFileSets.empty())
                 {
-                    std::cout << "Similar documents:" << std::endl;
+                    out << "Similar documents:" << std::endl;
                     for (auto it = mListFileSets.begin() ; it != mListFileSets.end(); ++it)
                     {
                         std::set<std::string>& fileSet = *(*it);
                         for (auto fileIt = fileSet.begin(); fileIt != fileSet.end(); ++fileIt)
                         {
-                            std::cout << *fileIt << " ";
+                            out << *fileIt << " ";
                         }
-                        std::cout << std::endl;
+                        out << std::endl;
                     }
                 }
                 else
                 {
-                    std::cout << "No similar documents found." << std::endl;
+                    out << "No similar documents found." << std::endl;
                 }
-                std::cout << std::endl;
+                out << std::endl;
             }
 
         protected:
             std::vector<std::shared_ptr<Document> >& mDocuments;
+            // This vector contains sets of similar documents
             std::vector<std::shared_ptr<std::set<std::string> > > mListFileSets;
+            // This contains the results of each comparision
+            std::vector<std::shared_ptr<ComparisonResult> > mListComparisionResults;
             uint16_t mThreshold;
     };
 }

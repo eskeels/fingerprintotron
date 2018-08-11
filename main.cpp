@@ -213,8 +213,10 @@ int main(int argc, char* argv[])
         return ret;
     }
 
+    std::cout << "Comparing documents with the following parameters:" << std::endl;
     std::cout << "NGramSize = " << NGramSize << std::endl << "WinnowSize = " << WinnowSize << std::endl << "Threshold = " << threshold << std::endl;
     std::vector<std::shared_ptr<Document> > docs;
+    std::cout << std::endl;
     std::cout << "Processing files:" << std::endl;
     for (const std::string& f : filesToFP)
     {
@@ -226,7 +228,9 @@ int main(int argc, char* argv[])
     DocumentCollectionAnalyser dca(docs, threshold);
 
     dca.Analyse();
-    dca.Dump();
+    std::stringstream ss;
+    dca.Dump(ss);
+    std::cout << ss.str();
 
     return ret;
 }
