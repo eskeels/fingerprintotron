@@ -24,7 +24,7 @@ namespace FingerPrintOTron
                   mNGRAM_SIZE(NGramSize),
                   mW(0),
                   mMinHash(0),
-                  mUS(UnicodeString::fromUTF8(UTF8Buffer)),
+                  mUS(icu::UnicodeString::fromUTF8(UTF8Buffer)),
                   mHashFunction(hashFunction)
             {
                 const UChar *ucharTxt = mUS.getTerminatedBuffer();
@@ -37,7 +37,7 @@ namespace FingerPrintOTron
                   mNGRAM_SIZE(NGramSize),
                   mW(0),
                   mMinHash(0),
-                  mUS(UnicodeString::fromUTF32(UTF32Buffer,len)),
+                  mUS(icu::UnicodeString::fromUTF32(UTF32Buffer,len)),
                   mHashFunction(hashFunction)
             {
                 const UChar *ucharTxt = mUS.getTerminatedBuffer();
@@ -143,7 +143,7 @@ namespace FingerPrintOTron
             // The minimum has for the WINNOW
             HASH mMinHash;
             // The ICU Unicode string for the input buffer
-            UnicodeString mUS;
+            icu::UnicodeString mUS;
             // The hash function
             HASHFUNCTION mHashFunction;
     };

@@ -44,9 +44,9 @@ namespace FingerPrintOTron
                 {
                     c = mIter.next32();
                     StoreChar(c);
-                } while(c != CharacterIterator::DONE && mNGram.size() < mNGramSize);
+                } while(c != icu::CharacterIterator::DONE && mNGram.size() < mNGramSize);
 
-                return(c != CharacterIterator::DONE);
+                return(c != icu::CharacterIterator::DONE);
             }
 
             bool IsAlphaNumeric(UChar32 c) const
@@ -60,7 +60,7 @@ namespace FingerPrintOTron
             }
 
         protected:
-            UCharCharacterIterator mIter; 
+            icu::UCharCharacterIterator mIter; 
             size_t mNGramSize;
             std::vector<UChar32> mNGram;
     };

@@ -72,7 +72,7 @@ void TestSigMod()
 void TestSigModWide()
 {
     const std::string testChars = "A do run run run, a do run run";
-    UnicodeString us(UnicodeString::fromUTF8(testChars.c_str()));
+    icu::UnicodeString us(icu::UnicodeString::fromUTF8(testChars.c_str()));
     const UChar *ucharTxt = us.getTerminatedBuffer();
 
     std::vector<HASH> result = { 33081, 5729, 7412, 33081, 5729 };
