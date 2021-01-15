@@ -169,12 +169,35 @@ namespace FingerPrintOTron
             {
                 return mHashMap.empty();
             }
-            
+
+            size_t CalculatePercentage(float a, float b) const
+            {
+                return static_cast<size_t>(100.0 * (a / b) );
+            }
+
             void CalculatePercentages(size_t totalSignatures, size_t& percentageSecond, size_t& percentageFirst) const
             {
                 float fTotalSignatures = totalSignatures;
-                percentageSecond = static_cast<size_t>(100.0 * (fTotalSignatures / float(mHashCountSecond)));
-                percentageFirst = static_cast<size_t>(100.0 * (fTotalSignatures / float(mHashCountFirst)));
+                float fHashCountSecond = mHashCountSecond;
+                float fHashCountFirst = mHashCountFirst;
+
+                if (fTotalSignatures > fHashCountSecond)
+                {
+                    percentageSecond = CalculatePercentage(fHashCountSecond, fTotalSignatures);
+                }
+                else
+                {
+                    percentageSecond = CalculatePercentage(fTotalSignatures, fHashCountSecond);
+                }
+
+                if (fTotalSignatures > fHashCountFirst)
+                {
+                    percentageFirst = CalculatePercentage(fHashCountFirst, fTotalSignatures);
+                }
+                else
+                {
+                    percentageFirst = CalculatePercentage(fTotalSignatures, fHashCountFirst);
+                }
             }
 
             void AnalyzeResults() 
