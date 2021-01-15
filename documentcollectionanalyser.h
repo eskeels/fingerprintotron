@@ -1,3 +1,7 @@
+// This source was written by Stephen Oswin, and is placed in the
+// public domain. The author hereby disclaims copyright to this source
+// code.
+
 #pragma once
 
 #include <vector>

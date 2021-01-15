@@ -1,9 +1,11 @@
+// This source was written by Stephen Oswin, and is placed in the
+// public domain. The author hereby disclaims copyright to this source
+// code.
 #pragma once
 
 #include <vector>
 #include <map>
 #include <memory>
-// Public Domain kick in it to ya
 
 #include "hasher.h"
 #include "comparisonresult.h"
