@@ -14,7 +14,7 @@ namespace FingerPrintOTron
 {
     class Document
     {
-        typedef std::vector<uint16_t> POSITIONS;
+        typedef std::vector<uint32_t> POSITIONS;
         typedef std::map<HASH,std::shared_ptr<POSITIONS> > HashIndex;
         public:
         Document(const std::string& name)
@@ -25,7 +25,7 @@ namespace FingerPrintOTron
         void AddHash(HASH hash)
         {
             mHashes.push_back(hash);
-            uint16_t pos = mHashes.size()-1;
+            uint32_t pos = mHashes.size()-1;
             HashIndex::iterator it = mHashIndex.find(hash);
             if (it == mHashIndex.end())
             {
@@ -63,9 +63,9 @@ namespace FingerPrintOTron
                 {
                     size_t posSecond = std::distance(Second.mHashes.begin(), hashItSecond);
                     // this is all the positions that the hash occurs
-                    for (uint16_t posFirst : *p)
+                    for (uint32_t posFirst : *p)
                     {
-                        uint16_t pos2 = posFirst;
+                        uint32_t pos2 = posFirst;
                         std::vector<HASH>::const_iterator hashFwdSecond = hashItSecond;
                         int count = 0;
                         std::shared_ptr<std::vector<HASH> > hashSequence(new std::vector<HASH>()); 

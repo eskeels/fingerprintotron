@@ -9,8 +9,8 @@
 
 using namespace FingerPrintOTron;
 
-const uint16_t NGRAM = 10; 
-const uint16_t WINNOWSIZE = 9;
+const uint32_t NGRAM = 10; 
+const uint32_t WINNOWSIZE = 9;
 
 using namespace FingerPrintOTron;
 

@@ -15,7 +15,7 @@ namespace FingerPrintOTron
     class DocumentCollectionAnalyser
     {
         public:
-            DocumentCollectionAnalyser(std::vector<std::shared_ptr<Document> >& docs, uint16_t threshold)
+            DocumentCollectionAnalyser(std::vector<std::shared_ptr<Document> >& docs, uint32_t threshold)
                 : mDocuments(docs),
                   mThreshold(threshold)
             {
@@ -119,6 +119,6 @@ namespace FingerPrintOTron
             std::vector<std::shared_ptr<std::set<std::string> > > mListFileSets;
             // This contains the results of each comparision
             std::vector<std::shared_ptr<ComparisonResult> > mListComparisionResults;
-            uint16_t mThreshold;
+            uint32_t mThreshold;
     };
 }

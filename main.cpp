@@ -89,7 +89,7 @@ void ReadFile(const std::string& filename, std::string& buffer)
     }
 }
 
-std::shared_ptr<Document> HashFile(const std::string& filename, uint16_t NGramSize, uint16_t WinnowSize)
+std::shared_ptr<Document> HashFile(const std::string& filename, uint32_t NGramSize, uint32_t WinnowSize)
 {
     Hasher H;
     std::string buffer;
@@ -166,23 +166,23 @@ int ProcessFiles(const std::vector<std::string>& fileNames, std::vector<std::str
     return ret;
 }
 
-int ProcessParams(std::map<std::string,std::string>& params, uint16_t& NGramSize, uint16_t& WinnowSize, uint16_t& threshold)
+int ProcessParams(std::map<std::string,std::string>& params, uint32_t& NGramSize, uint32_t& WinnowSize, uint32_t& threshold)
 {
     int ret = EXIT_SUCCESS;
 
     if (params.find("--ngramsize") != params.end())
     {
-        NGramSize = static_cast<uint16_t>(std::stoul(params["--ngramsize"]));
+        NGramSize = static_cast<uint32_t>(std::stoul(params["--ngramsize"]));
     }
 
     if (params.find("--winnowsize") != params.end())
     {
-        WinnowSize = static_cast<uint16_t>(std::stoul(params["--winnowsize"]));
+        WinnowSize = static_cast<uint32_t>(std::stoul(params["--winnowsize"]));
     }
 
     if (params.find("--threshold") != params.end())
     {
-        threshold = static_cast<uint16_t>(std::stoul(params["--threshold"]));
+        threshold = static_cast<uint32_t>(std::stoul(params["--threshold"]));
     }
 
     return ret;
@@ -207,9 +207,9 @@ int main(int argc, char* argv[])
         return ret;
     }
 
-    uint16_t NGramSize = 10;
-    uint16_t WinnowSize = 9;
-    uint16_t threshold = 20;
+    uint32_t NGramSize = 10;
+    uint32_t WinnowSize = 9;
+    uint32_t threshold = 20;
 
     ret = ProcessParams(params, NGramSize, WinnowSize, threshold); 
     if (ret != EXIT_SUCCESS)

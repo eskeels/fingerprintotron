@@ -21,7 +21,7 @@ namespace FingerPrintOTron
     {
         public:
             // Takes a null terminated UTF-8
-            FingerPrintGenerator(const char *UTF8Buffer, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
+            FingerPrintGenerator(const char *UTF8Buffer, const uint32_t NGramSize, const uint32_t WinnowSize, HASHFUNCTION hashFunction)
                 : mWINNOW_SIZE(WinnowSize),
                   mNGRAM_SIZE(NGramSize),
                   mW(0),
@@ -34,7 +34,7 @@ namespace FingerPrintOTron
             }
 
             // Takes UTF-32. len is the number of UTF32 characters.
-            FingerPrintGenerator(const UChar32 *UTF32Buffer, const uint16_t len, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
+            FingerPrintGenerator(const UChar32 *UTF32Buffer, const uint32_t len, const uint32_t NGramSize, const uint32_t WinnowSize, HASHFUNCTION hashFunction)
                 : mWINNOW_SIZE(WinnowSize),
                   mNGRAM_SIZE(NGramSize),
                   mW(0),
@@ -47,7 +47,7 @@ namespace FingerPrintOTron
             }
 
             // Takes UTF-16. len is the number of UTF16 characters.
-            FingerPrintGenerator(const UChar *UTF16Buffer, const uint16_t len, const uint16_t NGramSize, const uint16_t WinnowSize, HASHFUNCTION hashFunction)
+            FingerPrintGenerator(const UChar *UTF16Buffer, const uint32_t len, const uint32_t NGramSize, const uint32_t WinnowSize, HASHFUNCTION hashFunction)
                 : mWINNOW_SIZE(WinnowSize),
                   mNGRAM_SIZE(NGramSize),
                   mW(0),
@@ -134,14 +134,14 @@ namespace FingerPrintOTron
 
         protected:
             // WINNOW size
-            const uint16_t mWINNOW_SIZE;
+            const uint32_t mWINNOW_SIZE;
             // NGRAM size
-            const uint16_t mNGRAM_SIZE;
+            const uint32_t mNGRAM_SIZE;
             // NGRAM iterator
             std::shared_ptr<NGramIterator> mNGI;
             // The current WINNOW. Resets when
             // it gets to mWINNOW_SIZE
-            uint16_t mW;
+            uint32_t mW;
             // The minimum has for the WINNOW
             HASH mMinHash;
             // The ICU Unicode string for the input buffer
