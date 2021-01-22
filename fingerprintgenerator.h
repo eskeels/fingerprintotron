@@ -16,6 +16,12 @@
 
 namespace FingerPrintOTron
 {
+    // FingerPrintGenerator - Processes the text buffer (can be UTF-8 / 16 or 32)
+    // to produce a Document. The process is triggered by calling GetDocument().
+    // It will iterate through the text buffer using the NGramIterator to produce NGrams.
+    // Those are then hashed and the minimum hash for the window is selected and stored
+    // in the Document. NGram size and Winnow size (size of the window) are passed in to
+    // the constructor.
     template<typename HASHFUNCTION>
     class FingerPrintGenerator
     {

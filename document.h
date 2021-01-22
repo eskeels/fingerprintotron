@@ -12,6 +12,21 @@
 
 namespace FingerPrintOTron
 {
+    // Document - Holds a map of HASH to position. The Hashes are stored in the
+    // order they were calculated. Its not the position in the orginal document,
+    // AddHash() simply increments a counter as they are added to preserve the
+    // order. Document can compare to another document and the result goes into
+    // ComparisonResult using the Compare method. Compare iterates through the
+    // hashes of the document to compare against and finds them in this document.
+    // If a hash is found then it checks forward for a sequence and stores that in
+    // a vector which is added to the ComparisionResult.Document - Holds a map of
+    // HASH to position. The Hashes are stored in the order they were calculated.
+    // Its not the position in the orginal document, AddHash() simply increments a
+    // counter as they are added to preserve the order. Document can compare to
+    // another document and the result goes into ComparisonResult using the Compare
+    // method. Compare iterates through the hashes of the document to compare against
+    // and finds them in this document. If a hash is found then it checks forward for
+    // a sequence and stores that in a vector which is added to the ComparisionResult.
     class Document
     {
         typedef std::vector<uint32_t> POSITIONS;
@@ -67,14 +82,12 @@ namespace FingerPrintOTron
                     {
                         uint32_t pos2 = posFirst;
                         std::vector<HASH>::const_iterator hashFwdSecond = hashItSecond;
-                        int count = 0;
                         std::shared_ptr<std::vector<HASH> > hashSequence(new std::vector<HASH>()); 
                         while (pos2 < mHashes.size() &&
                                 (mHashes[pos2] == *hashFwdSecond) && 
                                 (hashFwdSecond != Second.mHashes.end()))
                         {
                             hashSequence->push_back(mHashes[pos2]);
-                            ++count;
                             ++pos2;
                             ++hashFwdSecond;
                         }

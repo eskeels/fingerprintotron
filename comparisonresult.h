@@ -12,6 +12,11 @@
 
 namespace FingerPrintOTron
 {
+    // ComparisionResult - Holds the matching sequences of hashes
+    // from the Document::Compare() and will perform analysis of the results
+    // to work out the percentage of hashes that match the two 
+    // documents. Also stores the lengths of the longest and shortest
+    // matching sequences.
     class ComparisonResult
     {
         public:
@@ -60,6 +65,7 @@ namespace FingerPrintOTron
                 end = it->first + it->second->size()-1;
             }
 
+            // Remove overlapping sequences of hashes
             void RemoveOverlaps()
             {
                 auto it = mHashMap.begin();
@@ -76,8 +82,7 @@ namespace FingerPrintOTron
                     {
                         if (next->second == NULL)
                         {
-                           exit(1);
-                           //continue;
+                           continue;
                         }
 
                         if (Within(it,next))
@@ -87,13 +92,14 @@ namespace FingerPrintOTron
                         }
                         else if (Within(next,it))
                         {
-                           exit(1);
                            //next within it
-                           //it->second.reset();
-                           //break;
+                           it->second.reset();
+                           break;
                         }
                     } 
                 }
+                // Overlaps were set to NULL so now
+                // remove them
                 RemoveNULLs();
             }
 
@@ -202,6 +208,10 @@ namespace FingerPrintOTron
                 }
             }
 
+            // Analyze the hash sequences to work out the percentages of matches
+            // for the two documents. These are stored in mPercentageFirst and mPercentageSecond.
+            // It also stores the length of the longest matching sequence and shortest matching
+            // sequence. These are stored in mMax and mMin.
             void AnalyzeResults() 
             {
                 if (!mHashMap.empty())
@@ -230,8 +240,9 @@ namespace FingerPrintOTron
                 }
 
             }
-
+            // Gets the size of the longest sequence of hashes
             size_t GetMax() const { return mMax; }
+            // Gets the size of the shortest sequence of hashes
             size_t GetMin() const { return mMin; }
             size_t GetTotal() const { return mTotal; }
             size_t GetPercentage() const { return std::max(GetPercentageSecond(),GetPercentageFirst()); } 

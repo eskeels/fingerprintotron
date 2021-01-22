@@ -12,6 +12,12 @@
 
 namespace FingerPrintOTron
 {
+    // DocumentCollectionAnalyser - Takes in a list of Document objects
+    // and a threshold. Each document is compared to the other and if the
+    // comparion results in a percentage match greater than the threshold
+    // then those 2 documents are recorded as being similar. All similar
+    // documents are stored in a set. The Dump() method will output the
+    //  results to a string stream.
     class DocumentCollectionAnalyser
     {
         public:
@@ -114,11 +120,15 @@ namespace FingerPrintOTron
             }
 
         protected:
+            // Vector of all the documents that should be analyzed by comparing with
+            // each other
             std::vector<std::shared_ptr<Document> >& mDocuments;
             // This vector contains sets of similar documents
             std::vector<std::shared_ptr<std::set<std::string> > > mListFileSets;
             // This contains the results of each comparision
             std::vector<std::shared_ptr<ComparisonResult> > mListComparisionResults;
+            // The percentage threshold that must be exceeded before 2 documents
+            // are considered as similar
             uint32_t mThreshold;
     };
 }

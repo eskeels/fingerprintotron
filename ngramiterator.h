@@ -11,9 +11,13 @@
 
 namespace FingerPrintOTron
 {
+    // NGramIterator - Iterates through the text buffer creating NGrams (according to the size passed in).
+    // The NGram will only contain alpha numeric characters.
     class NGramIterator
     {
         public:
+            // text points to the text buffer of length "size". ngramSize is the length of
+            // the ngrams to emit.
             NGramIterator(const UChar* text, int32_t size, size_t ngramSize)
                 : mIter(text,size),
                   mNGramSize(ngramSize)
