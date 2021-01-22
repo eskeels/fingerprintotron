@@ -14,7 +14,7 @@ namespace FingerPrintOTron
     class NGramIterator
     {
         public:
-            NGramIterator(const UChar* text, int16_t size, size_t ngramSize)
+            NGramIterator(const UChar* text, int32_t size, size_t ngramSize)
                 : mIter(text,size),
                   mNGramSize(ngramSize)
             {
