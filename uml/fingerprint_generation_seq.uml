@@ -1,0 +1,29 @@
+@startuml
+
+title "Finger print generation - Sequence Diagram"
+
+main -> FingerPrintGenerator : GetDocument
+activate FingerPrintGenerator
+    create Document
+    FingerPrintGenerator -> Document : new
+    loop [x Process all of the buffer]
+            FingerPrintGenerator -> NGramIterator : Next
+            activate NGramIterator
+                loop []
+                    note right of NGramIterator : Keep getting alpha characters until\nwe reach ngram size
+                    NGramIterator -> UCharCharacterIterator : next32
+                end
+            return
+            FingerPrintGenerator -> NGramIterator : GetNGram
+            note right of FingerPrintGenerator: Hash the NGram
+            FingerPrintGenerator -> Hasher : Hasher()
+            note right of FingerPrintGenerator: SetMinHash only records the\nminimum hash for the window
+            FingerPrintGenerator -> FingerPrintGenerator : SetMinHash
+            alt [x Window reached]
+                note right of FingerPrintGenerator: If we have enough hashes for the\nwindow then store the minimum
+                FingerPrintGenerator -> Document : AddHash
+            end
+    end
+
+    return Document
+@enduml
