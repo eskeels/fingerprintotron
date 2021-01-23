@@ -17,31 +17,36 @@ Run "compare" passing the files (UTF-8 text) to compare against each other. The 
 <br>
 Example output (running against directory called "examples" containing 4 text files):<br>
 <br>
-./compare examples<br>
-<br>
-Comparing documents with the following parameters:<br>
-NGramSize = 10<br>
-WinnowSize = 9<br>
-Threshold = 20<br>
-<br>
-Processing files:<br>
-examples/random.txt<br>
-examples/test1.txt<br>
-examples/test1_same.txt<br>
-examples/test2.txt<br>
-<br>
-examples/random.txt - examples/test1.txt %2<br>
-examples/random.txt - examples/test1_same.txt %2<br>
-examples/random.txt - examples/test2.txt %2<br>
-examples/test1.txt - examples/test1_same.txt %100<br>
-examples/test1.txt - examples/test2.txt %65<br>
-examples/test1_same.txt - examples/test2.txt %65<br>
-<br>
-Similar documents:<br>
-examples/test1.txt examples/test1_same.txt examples/test2.txt<br>
-<br>
+```
+./compare examples
+
+Comparing documents with the following parameters:
+NGramSize = 10
+WinnowSize = 9
+Threshold = 20
+
+Processing files:
+examples/random.txt
+examples/test1.txt
+examples/test1_same.txt
+examples/test2.txt
+
+examples/random.txt - examples/test1.txt %2
+examples/random.txt - examples/test1_same.txt %2
+examples/random.txt - examples/test2.txt %2
+examples/test1.txt - examples/test1_same.txt %100
+examples/test1.txt - examples/test2.txt %65
+examples/test1_same.txt - examples/test2.txt %65
+
+Similar documents:
+examples/test1.txt examples/test1_same.txt examples/test2.txt
+```
 so test1.txt has 65% of its fingerprints in common with test2.txt. rand.txt only has 2% in common with test1.txt.<br>
 <br>
 test1.txt / test1_same.txt and test2.txt all have common fingerprints.<br>
 <br>
-To use the library from within your own code the unit test "test_system.cpp" is a good starting point, then take a look at main.cpp.
+# Using the library
+To use the library from within your own code the unit test "test_system.cpp" is a good starting point, then take a look at main.cpp.<br>
+main.cpp loads the text files for comparision, generates the fingerprints and then performs analysis to find all documents deemed similar.
+# Fingerprint generation
+![Finger print generation sequence diagram](uml/fingerprint_generation_seq.png "Generating fingerprints")
