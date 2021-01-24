@@ -5,6 +5,38 @@ A C++ implementation of this algorithm:
 
 http://igm.univ-mlv.fr/~mac/ENS/DOC/sigmod03-1.pdf
 
+Doument fingerprinting is used to find duplicate text data within other documents. The duplicated text being searched for can be a fragment or the whole document. The algorithm allows for matching text that has been modified. The algorithm is detailed in the PDF but here is a quick description. My implementation also diverges at the winnowing step (detailed below).<br>Given some input text:
+<pre>
+A do run run run, a do run run
+</pre>
+Non alphanumeric characters are removed:
+```
+adorunrunrunadorunrun
+```
+Ngrams extracted (using a rolling window of 5 characters)
+```
+adoru dorun orunr runru unrun nrunr runru
+unrun nruna runad unado nador adoru dorun
+orunr runru unrun
+```
+Each Ngram is hashed (ie adoru -> 77, dorun -> 74 etc...):
+```
+77 74 42 17 98 50 17 98 8 88 67 39 77 74 42
+17 98
+```
+
+The smallest hash per window is selected (this is winnowing):
+<pre>
+[77 74 42 <b>17</b> 98] [50 17 98 <b>8</b> 88] [67 <b>39</b> 77 74 42]
+[<b>17</b> 98]
+</pre>
+I used a fixed window, the winnowing method actualy uses a rolling window. I found this method to be adequate. It reduced the number of hashes and simplified the code.
+
+Hash is recorded with 0-base position of the hash window:
+```
+[0,17][1,8][2,39][3,17]
+```
+
 # Building
 To build it requires CMake and GNU C++ (min version 4.8) and ICU (for Debian apt-get install libicu-dev for Centos or Red Hat yum install libicu-devel). The build steps are simply:<br>
 cmake .<br>
