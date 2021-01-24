@@ -5,7 +5,7 @@ A C++ implementation of this algorithm:
 
 http://igm.univ-mlv.fr/~mac/ENS/DOC/sigmod03-1.pdf
 
-Doument fingerprinting is used to find duplicate text data within other documents. The duplicated text being searched for can be a fragment or the whole document. The algorithm allows for matching text that has been modified. The algorithm is detailed in the PDF but here is a quick description. My implementation also diverges at the winnowing step (detailed below).<br>Given some input text:
+Document fingerprinting is used to find duplicate text data within other documents. The duplicated text being searched for can be a fragment or the whole document. The algorithm allows for matching text that has been modified. The algorithm is detailed in the PDF but here is a quick description. My implementation also diverges at the winnowing step (detailed below).<br>Given some input text:
 <pre>
 A do run run run, a do run run
 </pre>
