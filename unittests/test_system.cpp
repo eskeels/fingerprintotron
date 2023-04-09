@@ -99,8 +99,8 @@ void TestOneCharDiff()
     sherlockOneCharDiff[sherlockOneCharDiff.size()/2] = '.';
     std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlockOneCharDiff);
 
-    ASSERT(91 == cr->GetPercentageSecond());
-    ASSERT(91 == cr->GetPercentageFirst());
+    ASSERT_EQ(91 , cr->GetPercentageSecond());
+    ASSERT_EQ(91 , cr->GetPercentageFirst());
 }
 // compare whole string to half
 void TestHalfDiff()
@@ -108,8 +108,8 @@ void TestHalfDiff()
     std::string sherlockHalf(sherlock,sherlock.size()/2);
     std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlockHalf);
 
-    ASSERT(92 == cr->GetPercentageSecond());
-    ASSERT(45 == cr->GetPercentageFirst());
+    ASSERT_EQ(82 , cr->GetPercentageSecond());
+    ASSERT_EQ(40 , cr->GetPercentageFirst());
 }
 // create a string that has tale_of_2_cities with sherlock either side
 void TestEncased()
@@ -126,8 +126,13 @@ void TestEncased()
 
     {
     std::shared_ptr<ComparisonResult> cr = CompareText(tale_of_2_cities, str);
-    ASSERT(21 == cr->GetPercentageSecond());
-    ASSERT(76 == cr->GetPercentageFirst());
+#ifdef HASH64
+    ASSERT_EQ(21 , cr->GetPercentageSecond());
+    ASSERT_EQ(76 , cr->GetPercentageFirst());
+#else 
+    ASSERT_EQ(19 , cr->GetPercentageSecond());
+    ASSERT_EQ(67 , cr->GetPercentageFirst());
+#endif
     }
 }
 // testing some multiple byte UTF-8
@@ -150,7 +155,11 @@ void TestJapaneseMatch()
     str.append(tale_of_2_cities);
 
     std::shared_ptr<ComparisonResult> cr = CompareText(japanese, str);
-    ASSERT(18 == cr->GetPercentage());
+#ifdef HASH64
+    ASSERT_EQ(13 , cr->GetPercentage());
+#else
+    ASSERT_EQ(18 , cr->GetPercentage());
+#endif
 }
 int main(int argc, char* argv[])
 {

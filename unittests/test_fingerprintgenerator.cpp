@@ -55,35 +55,52 @@ void TestLeftover()
     ASSERT( 'e' == fp.GetHash());
 }
 
+#define TEST_CHARS "A do run run run, a do run run"
 void TestSigMod()
 {
-    const char testChars[] = "A do run run run, a do run run";
+    const char testChars[] = TEST_CHARS;
+#ifdef HASH64
+    std::vector<HASH> result = { 6686262350632615635,
+                                 2525989291511638577,
+                                 4574989650928438401,
+                                 6686262350632615635,
+                                 3986842452785137084 };
+#else
     std::vector<HASH> result = { 33081, 5729, 7412, 33081, 5729 };
+#endif
     FingerPrintGenerator<Hasher> fp(testChars,5,4,Hasher());
     int i = 0;
     while (fp.Next())
     {
-        ASSERT( result[i] == fp.GetHash() );
+        ASSERT_EQ( result[i] , fp.GetHash() );
         i++;
     }
-    ASSERT( result[i] == fp.GetHash() );
+    ASSERT_EQ( result[i] , fp.GetHash() );
 }
 
 void TestSigModWide()
 {
-    const std::string testChars = "A do run run run, a do run run";
+    const std::string testChars = TEST_CHARS;
     icu::UnicodeString us(icu::UnicodeString::fromUTF8(testChars.c_str()));
     const UChar *ucharTxt = us.getTerminatedBuffer();
-
+#ifdef HASH64
+    std::vector<HASH> result = { 6686262350632615635,
+                                 2525989291511638577,
+                                 4574989650928438401,
+                                 6686262350632615635,
+                                 3986842452785137084 };
+#else
     std::vector<HASH> result = { 33081, 5729, 7412, 33081, 5729 };
+#endif
+
     FingerPrintGenerator<Hasher> fp(ucharTxt,testChars.size(),5,4,Hasher());
     int i = 0;
     while (fp.Next())
     {
-        ASSERT( result[i] == fp.GetHash() );
+        ASSERT_EQ( result[i] , fp.GetHash() );
         i++;
     }
-    ASSERT( result[i] == fp.GetHash() );
+    ASSERT_EQ( result[i] , fp.GetHash() );
 }
 
 int main(int argc, char* argv[])
