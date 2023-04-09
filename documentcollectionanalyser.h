@@ -21,7 +21,7 @@ namespace FingerPrintOTron
     class DocumentCollectionAnalyser
     {
         public:
-            DocumentCollectionAnalyser(std::vector<std::shared_ptr<Document> >& docs, uint32_t threshold)
+            DocumentCollectionAnalyser(std::vector<std::shared_ptr<IDocument> >& docs, uint32_t threshold)
                 : mDocuments(docs),
                   mThreshold(threshold)
             {
@@ -58,7 +58,7 @@ namespace FingerPrintOTron
                 return NULL;
             }
 
-            void RecordResult(std::shared_ptr<ComparisonResult> cr)
+            void RecordResult(std::shared_ptr<IComparisonResult> cr)
             {
                 if (cr->GetPercentage() >= mThreshold)
                 {
@@ -70,12 +70,12 @@ namespace FingerPrintOTron
                     }
                 }
 
-                mListComparisionResults.push_back(cr);
+                mListComparisonResults.push_back(cr);
             }
 
-            void AnalysePair(const Document& first, const Document& second)
+            void AnalysePair(const IDocument& first, const IDocument& second)
             {
-                std::shared_ptr<ComparisonResult> result(new ComparisonResult);
+                std::shared_ptr<IComparisonResult> result(new ComparisonResult);
                 first.Compare(second,*result);
                 result->AnalyzeResults();
                 RecordResult(result);
@@ -94,7 +94,7 @@ namespace FingerPrintOTron
 
             void Dump(std::stringstream& out)
             {
-                for (auto cr : mListComparisionResults)
+                for (auto cr : mListComparisonResults)
                 {
                     out << cr->GetNameFirst() << " - " << cr->GetNameSecond() << " %" << cr->GetPercentage() << std::endl;
                 }
@@ -122,11 +122,11 @@ namespace FingerPrintOTron
         protected:
             // Vector of all the documents that should be analyzed by comparing with
             // each other
-            std::vector<std::shared_ptr<Document> >& mDocuments;
+            std::vector<std::shared_ptr<IDocument> >& mDocuments;
             // This vector contains sets of similar documents
             std::vector<std::shared_ptr<std::set<std::string> > > mListFileSets;
             // This contains the results of each comparision
-            std::vector<std::shared_ptr<ComparisonResult> > mListComparisionResults;
+            std::vector<std::shared_ptr<IComparisonResult> > mListComparisonResults;
             // The percentage threshold that must be exceeded before 2 documents
             // are considered as similar
             uint32_t mThreshold;

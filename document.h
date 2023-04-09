@@ -7,11 +7,15 @@
 #include <map>
 #include <memory>
 
+#include "idocument.h"
 #include "hasher.h"
 #include "comparisonresult.h"
 
 namespace FingerPrintOTron
 {
+    typedef std::vector<uint32_t> POSITIONS;
+    typedef std::map<HASH,std::shared_ptr<POSITIONS> > HashIndex;
+ 
     // Document - Holds a map of HASH to position. The Hashes are stored in the
     // order they were calculated. Its not the position in the orginal document,
     // AddHash() simply increments a counter as they are added to preserve the
@@ -20,11 +24,9 @@ namespace FingerPrintOTron
     // hashes of the document to compare against and finds them in this document.
     // If a hash is found then it checks forward for a sequence and stores that in
     // a vector which is added to the ComparisionResult.
-    class Document
+    class Document : public IDocument
     {
-        typedef std::vector<uint32_t> POSITIONS;
-        typedef std::map<HASH,std::shared_ptr<POSITIONS> > HashIndex;
-        public:
+       public:
         Document(const std::string& name)
             : mName(name)
         {
@@ -55,8 +57,9 @@ namespace FingerPrintOTron
             }
         }
 
-        void Compare(const Document& Second, ComparisonResult& result) const
+        void Compare(const IDocument& iSecond, IComparisonResult& result) const
         {
+            const Document& Second = (const Document&)iSecond;
             result.SetNameFirst(this->GetName());
             result.SetNameSecond(Second.GetName());
             result.SetHashCountSecond(Second.mHashes.size());

@@ -123,9 +123,9 @@ namespace FingerPrintOTron
 
             // Uses the finger printer generator to iterate through
             // the buffer and populate a document with the hashes
-            std::shared_ptr<Document> GetDocument(const std::string& name)
+            std::shared_ptr<IDocument> GetDocument(const std::string& name)
             {
-                std::shared_ptr<Document> doc(new Document(name));
+                std::shared_ptr<IDocument> doc(new Document(name));
                 while (Next())
                 {
                     doc->AddHash(GetHash());
@@ -137,6 +137,21 @@ namespace FingerPrintOTron
 
                 return doc;
             }
+
+            // Uses the finger printer generator to iterate through
+            // the buffer and populate a document with the hashes
+            void Process(IDocument& doc)
+            {
+                while (Next())
+                {
+                    doc.AddHash(GetHash());
+                }
+                if (Leftover())
+                {
+                    doc.AddHash(GetHash());
+                }
+            }
+
 
         protected:
             // WINNOW size

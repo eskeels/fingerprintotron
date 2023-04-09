@@ -14,18 +14,19 @@ const uint32_t WINNOWSIZE = 9;
 
 using namespace FingerPrintOTron;
 
-std::shared_ptr<Document> HashText(const std::string& buffer)
+std::shared_ptr<IDocument> HashText(const std::string& buffer)
 {
     Hasher H;
     FingerPrintGenerator<Hasher> fp(buffer.c_str(),NGRAM,WINNOWSIZE,H);
-    std::shared_ptr<Document> doc(fp.GetDocument("filename"));
+    std::shared_ptr<IDocument> doc(new Document("filename"));
+    fp.Process(*doc);
     return doc;
 }
 
 std::shared_ptr<ComparisonResult> CompareText(const std::string& buffer1, const std::string& buffer2)
 {
-    std::shared_ptr<Document> doc1(HashText(buffer1));
-    std::shared_ptr<Document> doc2(HashText(buffer2));
+    std::shared_ptr<IDocument> doc1(HashText(buffer1));
+    std::shared_ptr<IDocument> doc2(HashText(buffer2));
 
     std::shared_ptr<ComparisonResult> result(new ComparisonResult);
 

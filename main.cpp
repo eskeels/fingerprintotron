@@ -89,13 +89,14 @@ void ReadFile(const std::string& filename, std::string& buffer)
     }
 }
 
-std::shared_ptr<Document> HashFile(const std::string& filename, uint32_t NGramSize, uint32_t WinnowSize)
+std::shared_ptr<IDocument> HashFile(const std::string& filename, uint32_t NGramSize, uint32_t WinnowSize)
 {
     Hasher H;
     std::string buffer;
     ReadFile(filename,buffer);
     FingerPrintGenerator<Hasher> fp(buffer.c_str(),NGramSize,WinnowSize, H);
-    std::shared_ptr<Document> doc(fp.GetDocument(filename));
+    std::shared_ptr<IDocument> doc(new Document(filename));
+    fp.Process(*doc);
     return doc;
 }
 
@@ -219,13 +220,13 @@ int main(int argc, char* argv[])
 
     std::cout << "Comparing documents with the following parameters:" << std::endl;
     std::cout << "NGramSize = " << NGramSize << std::endl << "WinnowSize = " << WinnowSize << std::endl << "Threshold = " << threshold << std::endl;
-    std::vector<std::shared_ptr<Document> > docs;
+    std::vector<std::shared_ptr<IDocument> > docs;
     std::cout << std::endl;
     std::cout << "Processing files:" << std::endl;
     for (const std::string& f : filesToFP)
     {
         std::cout << f << std::endl;
-        std::shared_ptr<Document> doc(HashFile(f, NGramSize, WinnowSize));
+        std::shared_ptr<IDocument> doc(HashFile(f, NGramSize, WinnowSize));
         docs.push_back(doc);
     }
     std::cout << std::endl;

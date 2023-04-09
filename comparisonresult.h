@@ -8,6 +8,7 @@
 #include <memory>
 #include <sstream>
 
+#include "icomparisonresult.h"
 #include "hasher.h"
 
 namespace FingerPrintOTron
@@ -17,7 +18,7 @@ namespace FingerPrintOTron
     // to work out the percentage of hashes that match the two 
     // documents. Also stores the lengths of the longest and shortest
     // matching sequences.
-    class ComparisonResult
+    class ComparisonResult : public IComparisonResult
     {
         public:
             ComparisonResult()
