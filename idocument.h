@@ -25,7 +25,8 @@ namespace FingerPrintOTron
         public:
         virtual ~IDocument() {};
         virtual void AddHash(HASH hash) = 0;
-        virtual void Compare(const IDocument& iSecond, IComparisonResult& result) const = 0;
+        virtual std::shared_ptr<IComparisonResult> Compare(const IDocument& iSecond) const = 0;
+
     };
 }
 

@@ -57,13 +57,13 @@ namespace FingerPrintOTron
             }
         }
 
-        void Compare(const IDocument& iSecond, IComparisonResult& result) const
+        std::shared_ptr<IComparisonResult> Compare(const IDocument& iSecond) const
         {
             const Document& Second = (const Document&)iSecond;
-            result.SetNameFirst(this->GetName());
-            result.SetNameSecond(Second.GetName());
-            result.SetHashCountSecond(Second.mHashes.size());
-            result.SetHashCountFirst(mHashes.size());
+            ComparisonResult* result = new ComparisonResult(this->GetName(),
+                                                            Second.GetName(),
+                                                            mHashes.size(),
+                                                            Second.mHashes.size());
 
             std::vector<HASH>::const_iterator hashItSecond = Second.mHashes.begin();
 
@@ -72,7 +72,6 @@ namespace FingerPrintOTron
                 std::shared_ptr<POSITIONS> p = Find(*hashItSecond);
                 if (p)
                 {
-                    size_t posSecond = std::distance(Second.mHashes.begin(), hashItSecond);
                     // this is all the positions that the hash occurs
                     for (uint32_t posFirst : *p)
                     {
@@ -87,13 +86,14 @@ namespace FingerPrintOTron
                             ++pos2;
                             ++hashFwdSecond;
                         }
-                        result.AddHash(posFirst,hashSequence);
+                        result->AddHash(posFirst,hashSequence);
                     }
                 }
             }
-            result.RemoveOverlaps();
+            result->RemoveOverlaps();
+            return std::shared_ptr<IComparisonResult>(result);
         }
-
+        
         std::shared_ptr<POSITIONS> Find(HASH hash) const
         {
             HashIndex::const_iterator it = mHashIndex.find(hash);

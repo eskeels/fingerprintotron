@@ -34,6 +34,22 @@ namespace FingerPrintOTron
             {
             }
 
+            ComparisonResult(const std::string& nameFirst,
+                             const std::string& nameSecond,
+                             size_t hashCountFirst,
+                             size_t hashCountSecond)
+                : mHashCountSecond(hashCountSecond),
+                  mHashCountFirst(hashCountFirst),
+                  mMax(0),
+                  mMin(0),
+                  mTotal(0),
+                  mPercentageSecond(0),
+                  mPercentageFirst(0),
+                  mNameFirst(nameFirst),
+                  mNameSecond(nameSecond)
+            {
+            }
+
             void AddHash(size_t position, std::shared_ptr<std::vector<HASH> > hashes)
             {
                 bool insert = true;
@@ -246,7 +262,6 @@ namespace FingerPrintOTron
             // Gets the size of the shortest sequence of hashes
             size_t GetMin() const { return mMin; }
             size_t GetTotal() const { return mTotal; }
-            size_t GetPercentage() const { return std::max(GetPercentageSecond(),GetPercentageFirst()); } 
             size_t GetPercentageSecond() const { return mPercentageSecond; }
             size_t GetPercentageFirst() const { return mPercentageFirst; }
 

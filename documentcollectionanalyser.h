@@ -9,6 +9,7 @@
 #include <string>
 
 #include "comparisonresult.h"
+#include "compressedcomparisonresult.h"
 
 namespace FingerPrintOTron
 {
@@ -75,8 +76,8 @@ namespace FingerPrintOTron
 
             void AnalysePair(const IDocument& first, const IDocument& second)
             {
-                std::shared_ptr<IComparisonResult> result(new ComparisonResult);
-                first.Compare(second,*result);
+                //std::shared_ptr<IComparisonResult> result(new CompressedComparisonResult(100));
+                std::shared_ptr<IComparisonResult> result = first.Compare(second);
                 result->AnalyzeResults();
                 RecordResult(result);
             }

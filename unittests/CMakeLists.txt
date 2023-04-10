@@ -19,6 +19,10 @@ add_executable (test_document test_document.cpp)
 target_link_libraries(test_document)
 add_test (test_document test_document)
 
+add_executable (test_compresseddocument test_compresseddocument.cpp)
+target_link_libraries(test_compresseddocument)
+add_test (test_compresseddocument test_compresseddocument)
+
 add_executable (test_comparisonresult test_comparisonresult.cpp)
 target_link_libraries(test_comparisonresult)
 add_test (test_comparisonresult test_comparisonresult)

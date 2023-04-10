@@ -14,6 +14,7 @@
 #include "hasher.h"
 #include "fingerprintgenerator.h"
 #include "document.h"
+#include "compresseddocument.h"
 #include "documentcollectionanalyser.h"
 
 using namespace FingerPrintOTron;
@@ -27,6 +28,7 @@ int ParseCmdLine(int argc, char* argv[], std::vector<std::string>& fnames, std::
         std::cerr << "--threshold   - percentage of common signatures before 2 documents are considered as similar." << std::endl;
         std::cerr << "--ngram       - NGram size is the number of characters of a word that are hashed." << std::endl;
         std::cerr << "--winnow      - Winnow is the size of the window to select fingerprints from." << std::endl;
+        std::cerr << "--mode        - c for compressed fingerprinting or n for normal." << std::endl;
         return EXIT_FAILURE;
     }
     else
@@ -89,13 +91,22 @@ void ReadFile(const std::string& filename, std::string& buffer)
     }
 }
 
-std::shared_ptr<IDocument> HashFile(const std::string& filename, uint32_t NGramSize, uint32_t WinnowSize)
+std::shared_ptr<IDocument> HashFile(const std::string& filename, uint32_t NGramSize, uint32_t WinnowSize, char mode)
 {
     Hasher H;
     std::string buffer;
     ReadFile(filename,buffer);
     FingerPrintGenerator<Hasher> fp(buffer.c_str(),NGramSize,WinnowSize, H);
-    std::shared_ptr<IDocument> doc(new Document(filename));
+    std::shared_ptr<IDocument> doc;
+    if (mode == 'n')
+    {
+        doc.reset(new Document(filename));
+    }
+    else
+    {
+        doc.reset(new CompressedDocument(filename, 100));
+    }
+
     fp.Process(*doc);
     return doc;
 }
@@ -167,7 +178,7 @@ int ProcessFiles(const std::vector<std::string>& fileNames, std::vector<std::str
     return ret;
 }
 
-int ProcessParams(std::map<std::string,std::string>& params, uint32_t& NGramSize, uint32_t& WinnowSize, uint32_t& threshold)
+int ProcessParams(std::map<std::string,std::string>& params, uint32_t& NGramSize, uint32_t& WinnowSize, uint32_t& threshold, char& mode)
 {
     int ret = EXIT_SUCCESS;
 
@@ -184,6 +195,11 @@ int ProcessParams(std::map<std::string,std::string>& params, uint32_t& NGramSize
     if (params.find("--threshold") != params.end())
     {
         threshold = static_cast<uint32_t>(std::stoul(params["--threshold"]));
+    }
+
+    if (params.find("--mode") != params.end())
+    {
+        mode = params["--mode"].at(0);
     }
 
     return ret;
@@ -211,8 +227,9 @@ int main(int argc, char* argv[])
     uint32_t NGramSize = 10;
     uint32_t WinnowSize = 9;
     uint32_t threshold = 20;
+    char mode = 'n';
 
-    ret = ProcessParams(params, NGramSize, WinnowSize, threshold); 
+    ret = ProcessParams(params, NGramSize, WinnowSize, threshold, mode); 
     if (ret != EXIT_SUCCESS)
     {
         return ret;
@@ -220,18 +237,19 @@ int main(int argc, char* argv[])
 
     std::cout << "Comparing documents with the following parameters:" << std::endl;
     std::cout << "NGramSize = " << NGramSize << std::endl << "WinnowSize = " << WinnowSize << std::endl << "Threshold = " << threshold << std::endl;
+    std::cout << "Mode = " << (mode == 'n' ? "Normal" : "Compressed") << std::endl;
     std::vector<std::shared_ptr<IDocument> > docs;
     std::cout << std::endl;
     std::cout << "Processing files:" << std::endl;
     for (const std::string& f : filesToFP)
     {
         std::cout << f << std::endl;
-        std::shared_ptr<IDocument> doc(HashFile(f, NGramSize, WinnowSize));
+        std::shared_ptr<IDocument> doc(HashFile(f, NGramSize, WinnowSize, mode));
         docs.push_back(doc);
     }
     std::cout << std::endl;
     DocumentCollectionAnalyser dca(docs, threshold);
-
+    std::cout << "Analysing.." << std::endl;
     dca.Analyse();
     std::stringstream ss;
     dca.Dump(ss);

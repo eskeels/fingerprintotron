@@ -21,17 +21,11 @@ namespace FingerPrintOTron
     {
         public:
             virtual ~IComparisonResult() {};
-            virtual void AddHash(size_t position, std::shared_ptr<std::vector<HASH> > hashes) = 0;
-            virtual void RemoveOverlaps() = 0;
             virtual void AnalyzeResults() = 0;
-            virtual size_t GetMax() const = 0;
-            virtual size_t GetMin() const = 0;
             virtual size_t GetTotal() const = 0;
-            virtual size_t GetPercentage() const = 0;
+            size_t GetPercentage() const { return std::max(GetPercentageSecond(),GetPercentageFirst()); } 
             virtual size_t GetPercentageSecond() const = 0;
             virtual size_t GetPercentageFirst() const = 0;
-            virtual void SetHashCountSecond(size_t c) = 0;
-            virtual void SetHashCountFirst(size_t c) = 0;
             virtual void SetNameFirst(const std::string& name) = 0;
             virtual void SetNameSecond(const std::string& name) = 0;
             virtual const std::string& GetNameFirst() const = 0;

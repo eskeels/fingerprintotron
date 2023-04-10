@@ -23,14 +23,12 @@ std::shared_ptr<IDocument> HashText(const std::string& buffer)
     return doc;
 }
 
-std::shared_ptr<ComparisonResult> CompareText(const std::string& buffer1, const std::string& buffer2)
+std::shared_ptr<IComparisonResult> CompareText(const std::string& buffer1, const std::string& buffer2)
 {
     std::shared_ptr<IDocument> doc1(HashText(buffer1));
     std::shared_ptr<IDocument> doc2(HashText(buffer2));
 
-    std::shared_ptr<ComparisonResult> result(new ComparisonResult);
-
-    doc1->Compare(*doc2,*result);
+    std::shared_ptr<IComparisonResult> result = doc1->Compare(*doc2);
 
     result->AnalyzeResults();
     return result; 
@@ -68,14 +66,14 @@ const std::string japanese_line_4 = "の転入学を認める。他大学や予�
 // compare same string
 void TestSame()
 {
-    std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlock);
+    auto cr = CompareText(sherlock, sherlock);
     ASSERT(100 == cr->GetPercentageSecond());
     ASSERT(100 == cr->GetPercentageFirst());
 }
 // compare 2 different strings
 void TestDifferent()
 {
-    std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, tale_of_2_cities);
+    auto cr = CompareText(sherlock, tale_of_2_cities);
     ASSERT(0 == cr->GetPercentageSecond());
     ASSERT(0 == cr->GetPercentageFirst());
 }
@@ -88,7 +86,7 @@ void TestUpperLower()
 
     std::transform(sherlockUpper.begin(), sherlockUpper.end(), sherlockUpper.begin(), ::toupper); 
     std::transform(sherlockLower.begin(), sherlockLower.end(), sherlockLower.begin(), ::tolower); 
-    std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlock);
+    auto cr = CompareText(sherlock, sherlock);
     ASSERT(100 == cr->GetPercentageSecond());
     ASSERT(100 == cr->GetPercentageFirst());
 }
@@ -98,7 +96,7 @@ void TestOneCharDiff()
 {
     std::string sherlockOneCharDiff(sherlock);
     sherlockOneCharDiff[sherlockOneCharDiff.size()/2] = '.';
-    std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlockOneCharDiff);
+    auto cr = CompareText(sherlock, sherlockOneCharDiff);
 
     ASSERT_EQ(91 , cr->GetPercentageSecond());
     ASSERT_EQ(91 , cr->GetPercentageFirst());
@@ -107,7 +105,7 @@ void TestOneCharDiff()
 void TestHalfDiff()
 {
     std::string sherlockHalf(sherlock,sherlock.size()/2);
-    std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, sherlockHalf);
+    auto cr = CompareText(sherlock, sherlockHalf);
 
     ASSERT_EQ(82 , cr->GetPercentageSecond());
     ASSERT_EQ(40 , cr->GetPercentageFirst());
@@ -120,13 +118,13 @@ void TestEncased()
     str.append(sherlock);
 
     {
-    std::shared_ptr<ComparisonResult> cr = CompareText(sherlock, str);
+    auto cr = CompareText(sherlock, str);
     ASSERT(35 == cr->GetPercentageSecond());
     ASSERT(100 == cr->GetPercentageFirst());
     }
 
     {
-    std::shared_ptr<ComparisonResult> cr = CompareText(tale_of_2_cities, str);
+    auto cr = CompareText(tale_of_2_cities, str);
 #ifdef HASH64
     ASSERT_EQ(21 , cr->GetPercentageSecond());
     ASSERT_EQ(76 , cr->GetPercentageFirst());
@@ -139,13 +137,13 @@ void TestEncased()
 // testing some multiple byte UTF-8
 void TestJapaneseNoMatch()
 {
-    std::shared_ptr<ComparisonResult> cr = CompareText(japanese, sherlock);
+    auto cr = CompareText(japanese, sherlock);
     ASSERT(0 == cr->GetPercentage());
 }
 
 void TestJapaneseSame()
 {
-    std::shared_ptr<ComparisonResult> cr = CompareText(japanese, japanese);
+    auto cr = CompareText(japanese, japanese);
     ASSERT(100 == cr->GetPercentage());
 }
 
@@ -155,7 +153,7 @@ void TestJapaneseMatch()
     str.append(japanese_line_4);
     str.append(tale_of_2_cities);
 
-    std::shared_ptr<ComparisonResult> cr = CompareText(japanese, str);
+    auto cr = CompareText(japanese, str);
 #ifdef HASH64
     ASSERT_EQ(13 , cr->GetPercentage());
 #else

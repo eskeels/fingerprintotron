@@ -82,3 +82,5 @@ To use the library from within your own code the unit test "test_system.cpp" is 
 main.cpp loads the text files for comparision, generates the fingerprints and then performs analysis to find all documents deemed similar.
 # Fingerprint generation
 ![Finger print generation sequence diagram](uml/fingerprint_generation_seq.png "Generating fingerprints")
+# Compressed mode
+New mode added, compressed mode. This uses a fixed number of fingerprints per document. It stores a fixed number of odd and even hashes for each document. The smallest of each type are stored. The sample application uses 200 fingerprints (100 odd / even). When in this mode you should lower the threshold as it is fall less precise.

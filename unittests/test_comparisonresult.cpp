@@ -19,8 +19,8 @@ void TestEmpty()
     Document doc1("doc1.txt");
     Document doc2("doc2.txt");
 
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
     std::stringstream ss;
     result.Dump(ss);
     ASSERT( result.ZeroMatch() );
@@ -40,8 +40,8 @@ void TestMatch1HashExact()
     doc1.AddHash(1);
     doc2.AddHash(1);
 
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
 
     ASSERT(result.GetHash(0)->at(0) == 1);
     ASSERT(result.GetHash(1) == NULL);
@@ -67,8 +67,8 @@ void TestMatch3HashExact()
     doc2.AddHash(2);
     doc2.AddHash(3);
 
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
 
     ASSERT(result.GetHash(0)->at(0) == 1);
     ASSERT(result.GetHash(0)->at(1) == 2);
@@ -99,8 +99,8 @@ void TestOverwrite()
     doc2.AddHash(2);
     doc2.AddHash(3);
 
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
 
     ASSERT(result.GetHash(0)->at(0) == 1);
     ASSERT(result.GetHash(0)->at(1) == 2);
@@ -130,8 +130,8 @@ void TestSkip()
     doc2.AddHash(1);
     doc2.AddHash(2);
 
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
 
     ASSERT(result.GetHash(0)->at(0) == 1);
     ASSERT(result.GetHash(0)->at(1) == 2);
@@ -159,8 +159,9 @@ void TestNoMatch()
     doc2.AddHash(5);
     doc2.AddHash(6);
 
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
+
     ASSERT(result.ZeroMatch());
     result.RemoveOverlaps();
     result.AnalyzeResults();
@@ -187,8 +188,8 @@ void TestMatch2Hashes()
     doc2.AddHash(3);
     doc2.AddHash(0);
 
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
 
     ASSERT(result.GetHash(1)->at(0) == 2);
     ASSERT(result.GetHash(1)->at(1) == 3);
@@ -221,8 +222,8 @@ void TestRemoveOverlap()
     doc2.AddHash(2);
     doc2.AddHash(3);
 
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
 
     std::vector<HASH> expected = { 1, 2, 3 };
     ASSERT( *(result.GetHash(0)) == expected );
@@ -253,8 +254,8 @@ void TestRemoveOverlap()
     doc2.AddHash(2);
     doc2.AddHash(3);
    
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
 
     std::vector<HASH> expected = { 1, 2, 3 };
     ASSERT( *(result.GetHash(0)) == expected );
@@ -288,8 +289,8 @@ void TestDoNotRemoveOverlap()
     doc2.AddHash(3);
     doc2.AddHash(4);
   
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
 
     std::vector<HASH> expected1 = { 2, 3 };
     std::vector<HASH> expected2 = { 0 };
@@ -316,8 +317,8 @@ void TestDoNotRemoveOverlap()
     doc1.AddHash(std::vector<HASH>{0,2,3,4});
     doc2.AddHash(std::vector<HASH>{1,2,3,0});
   
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
 
     std::vector<HASH> expected0 = { 0 };
     std::vector<HASH> expected1 = { 2, 3 };
@@ -353,8 +354,8 @@ void TestWithinNextIt()
     std::vector<HASH> expected0 = { 2,3,4 };
 
     {
-    ComparisonResult result;
-    doc1.Compare(doc2, result);
+    auto cr = doc1.Compare(doc2);
+    ComparisonResult& result = (ComparisonResult&) *cr;
     ASSERT( *(result.GetHash(1)) == expected0 );
     result.AnalyzeResults();
     ASSERT(result.GetMin() == 3);
@@ -365,8 +366,8 @@ void TestWithinNextIt()
     }
 
     {
-    ComparisonResult result;
-    doc2.Compare(doc1, result);
+    auto cr = doc2.Compare(doc1);
+    ComparisonResult& result = (ComparisonResult&) *cr;
     ASSERT( *(result.GetHash(2)) == expected0 );
     result.AnalyzeResults();
     ASSERT(result.GetMin() == 3);
