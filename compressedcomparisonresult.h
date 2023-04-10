@@ -25,6 +25,7 @@ namespace FingerPrintOTron
                                        size_t total)
                 : mNameFirst(nameFirst),
                   mNameSecond(nameSecond),
+                  // double to account for odd and even
                   mTotal(total*2)
             {
             }
