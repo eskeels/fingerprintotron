@@ -30,7 +30,12 @@ namespace FingerPrintOTron
         }
 
         ~CompressedDocument() {};
-        
+       
+        // Adds the matching hash to either the odd or even
+        // vectors. Duplicates are ignored.
+        // Vector is sorted after every push_back
+        // and a resize() ensures it never grows beyond
+        // mSize 
         void AddHash(HASH hash)
         {
             std::vector<HASH>* pV;
@@ -48,23 +53,13 @@ namespace FingerPrintOTron
             {
                 return;
             }
-
-
-            /*
-            if (pV->size() <= mSize+1)
-            {
-                pV->push_back(hash);
-            }
-            else
-            {
-                // overwrite the last entry
-                (*pV)[mSize+1] = hash;
-            }
-            */
-
+           
             pV->push_back(hash);
             std::sort(pV->begin(), pV->end());
-            if (pV->size() > mSize)pV->resize(mSize,0);
+            
+            if (pV->size() > mSize) {
+                pV->resize(mSize,0);
+            }
         }
 
         const std::vector<HASH>& GetOdd() const
@@ -93,10 +88,9 @@ namespace FingerPrintOTron
 
         void FindMatching(const std::vector<HASH>& v1, const std::vector<HASH>& v2, CompressedComparisonResult& cr) const
         {
-            // NB ignore the last entry in the vector
-            for( int i = 0 ; i < v1.size()-1 ; ++i )
+            for( int i = 0 ; i < v1.size() ; ++i )
             {
-                if (std::binary_search(v2.begin(), v2.end()-1, v1[i]))
+                if (std::binary_search(v2.begin(), v2.end(), v1[i]))
                 {
                     cr.AddHash(v1[i]);
                 }
@@ -106,7 +100,8 @@ namespace FingerPrintOTron
         std::shared_ptr<IComparisonResult> Compare(const IDocument& iSecond) const
         {
             const CompressedDocument& Second = (const CompressedDocument&)iSecond;
-            CompressedComparisonResult* result = new CompressedComparisonResult(this->GetName(),Second.GetName(),mSize);
+            size_t total = mOdd.size() + mEven.size();
+            CompressedComparisonResult* result = new CompressedComparisonResult(this->GetName(),Second.GetName(),total);
             // copy matching hashes into result
             FindMatching(this->mOdd, Second.mOdd, *result);
             FindMatching(this->mEven, Second.mEven, *result);

@@ -27,6 +27,10 @@ add_executable (test_comparisonresult test_comparisonresult.cpp)
 target_link_libraries(test_comparisonresult)
 add_test (test_comparisonresult test_comparisonresult)
 
+add_executable (test_compressedcomparisonresult test_compressedcomparisonresult.cpp)
+target_link_libraries(test_compressedcomparisonresult)
+add_test (test_compressedcomparisonresult test_compressedcomparisonresult)
+
 add_executable (test_system test_system.cpp ../murmur3.c)
 target_link_libraries(test_system icudata icuio icuuc)
 add_test (test_system test_system)
