@@ -49,7 +49,9 @@ namespace FingerPrintOTron
                 return;
             }
 
-            if (pV->size() <= mSize)
+
+            /*
+            if (pV->size() <= mSize+1)
             {
                 pV->push_back(hash);
             }
@@ -58,8 +60,11 @@ namespace FingerPrintOTron
                 // overwrite the last entry
                 (*pV)[mSize+1] = hash;
             }
+            */
 
+            pV->push_back(hash);
             std::sort(pV->begin(), pV->end());
+            if (pV->size() > mSize)pV->resize(mSize,0);
         }
 
         const std::vector<HASH>& GetOdd() const

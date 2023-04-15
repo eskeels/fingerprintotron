@@ -36,8 +36,7 @@ namespace FingerPrintOTron
 
             void AnalyzeResults()
             {
-                mPercentageFirst = (size_t)(100.0 * ((float)mHashes.size() / (float)mTotal));
-                mPercentageSecond = mPercentageFirst;
+                mPercentage = (size_t)(100.0 * ((float)mHashes.size() / (float)mTotal));
             }
 
             size_t GetTotal() const
@@ -47,12 +46,12 @@ namespace FingerPrintOTron
 
             size_t GetPercentageSecond() const
             {
-                return mPercentageSecond;
+                return mPercentage;
             }
 
             size_t GetPercentageFirst() const
             {
-                return mPercentageFirst;
+                return mPercentage;
             }
 
             void SetNameFirst(const std::string& name)
@@ -77,8 +76,7 @@ namespace FingerPrintOTron
 
         protected:
             std::vector<HASH> mHashes;
-            size_t mPercentageSecond;
-            size_t mPercentageFirst;
+            size_t mPercentage;
             std::string mNameFirst;
             std::string mNameSecond;
             size_t mTotal;
